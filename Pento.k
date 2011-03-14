@@ -1,0 +1,2164 @@
+!! SYMFILE #Pento 0x00020901 #Pento.%main 1
+!! TYPE #CellPtr !0 POINTER
+!! TARGET 0 !1 RECORD #Pento.Cell 20 VOID
+!!   FIELD #up 0 0
+!!   FIELD #down 4 0
+!!   FIELD #left 8 0
+!!   FIELD #right 12 0
+!!   FIELD #column 16 !2 POINTER;
+!! TARGET 2 !3 RECORD #Pento.Column 28 VOID
+!!   FIELD #name 0 CHAR
+!!   FIELD #x 4 INTEGER
+!!   FIELD #y 8 INTEGER
+!!   FIELD #size 12 INTEGER
+!!   FIELD #prev 16 2
+!!   FIELD #next 20 2
+!!   FIELD #head 24 0;
+!! TYPE #ColumnPtr 2
+!! TYPE #Cell 1
+!! TYPE #Column 3
+!! GLOBAL #root #Pento.root 2
+!! GLOBAL #ncols #Pento.ncols INTEGER
+!! GLOBAL #nrows #Pento.nrows INTEGER
+!! PROCEDURE #PrintCol 30 #Pento.PrintCol !4 PROC 1 VOID
+!!   PARAM #c 12 2;;
+!! PROCEDURE #PrintRow 41 #Pento.PrintRow !5 PROC 1 VOID
+!!   PARAM #p 12 0;
+!!     LOCAL #q -4 0
+!!     LOCAL #r -8 0
+!!     LOCAL #n -12 INTEGER;
+!! CONST #MAX INTCONST 20
+!! TYPE #Coords !6 ARRAY 10 INTEGER
+!! GLOBAL #boundx #Pento.boundx INTEGER
+!! GLOBAL #boundy #Pento.boundy INTEGER
+!! GLOBAL #square #Pento.square !7 ARRAY 20 !8 ARRAY 20 2
+!! GLOBAL #piece #Pento.piece !9 ARRAY 256 2
+!! PROCEDURE #MakeSquare 72 #Pento.MakeSquare !10 PROC 2 VOID
+!!   PARAM #i 12 INTEGER
+!!   PARAM #j 16 INTEGER;
+!!     LOCAL #p -4 2;
+!! PROCEDURE #MakePiece 86 #Pento.MakePiece !11 PROC 1 VOID
+!!   PARAM #name 12 CHAR;
+!!     LOCAL #p -4 2;
+!! PROCEDURE #MakeMove 97 #Pento.MakeMove !12 PROC 4 VOID
+!!   PARAM #name 12 CHAR
+!!   PARAM #n 16 INTEGER
+!!   PARAM #xx -60 6
+!!   PARAM #yy -100 6;
+!!     LOCAL #k -4 INTEGER
+!!     LOCAL #p -8 0
+!!     LOCAL #q -12 0
+!!     LOCAL #r -16 2;
+!! PROCEDURE #CreateBoard 122 #Pento.CreateBoard !13 PROC 0 VOID;
+!!     LOCAL #i -4 INTEGER
+!!     LOCAL #j -8 INTEGER;
+!! PROCEDURE #Feasible 140 #Pento.Feasible !14 PROC 3 BOOLEAN
+!!   PARAM #n 12 INTEGER
+!!   PARAM #xx -48 6
+!!   PARAM #yy -88 6;
+!!     LOCAL #k -4 INTEGER;
+!! DEF !15 FLEX CHAR
+!! PROCEDURE #CreatePiece 150 #Pento.CreatePiece !16 PROC 5 VOID
+!!   PARAM #name 12 CHAR
+!!   PARAM #rots 16 INTEGER
+!!   PARAM #refls 20 INTEGER
+!!   PARAM #layout 24 15;
+!!     LOCAL #i -4 INTEGER
+!!     LOCAL #j -8 INTEGER
+!!     LOCAL #k -12 INTEGER
+!!     LOCAL #n -16 INTEGER
+!!     LOCAL #m -20 INTEGER
+!!     LOCAL #r -24 INTEGER
+!!     LOCAL #z -28 INTEGER
+!!     LOCAL #xmin -32 INTEGER
+!!     LOCAL #xmax -36 INTEGER
+!!     LOCAL #ymin -40 INTEGER
+!!     LOCAL #ymax -44 INTEGER
+!!     LOCAL #xx -84 6
+!!     LOCAL #yy -124 6
+!!     LOCAL #uu -164 6
+!!     LOCAL #vv -204 6;
+!! PROCEDURE #CreateGame 206 #Pento.CreateGame !17 PROC 0 VOID;;
+!! GLOBAL #count #Pento.count INTEGER
+!! GLOBAL #steps #Pento.steps INTEGER
+!! GLOBAL #choice #Pento.choice !18 ARRAY 20 0
+!! GLOBAL #pflag #Pento.pflag BOOLEAN
+!! GLOBAL #qflag #Pento.qflag BOOLEAN
+!! GLOBAL #verbosity #Pento.verbosity INTEGER
+!! PROCEDURE #Cover 239 #Pento.Cover !19 PROC 1 VOID
+!!   PARAM #p 12 2;
+!!     LOCAL #q -4 0
+!!     LOCAL #r -8 0;
+!! PROCEDURE #Uncover 259 #Pento.Uncover !20 PROC 1 VOID
+!!   PARAM #p 12 2;
+!!     LOCAL #q -4 0
+!!     LOCAL #r -8 0;
+!! PROCEDURE #ChooseColumn 279 #Pento.ChooseColumn !21 PROC 0 2;
+!!     LOCAL #c -4 2
+!!     LOCAL #col -8 2;
+!! DEF !22 FLEX CHAR
+!! PROCEDURE #PrintState 303 #Pento.PrintState !23 PROC 4 VOID
+!!   PARAM #cmd 12 22
+!!   PARAM #count 20 INTEGER
+!!   PARAM #level 24 INTEGER;
+!!     LOCAL #k -4 INTEGER;
+!! PROCEDURE #Solve 316 #Pento.Solve !24 PROC 1 VOID
+!!   PARAM #level 12 INTEGER;
+!!     LOCAL #col -4 2
+!!     LOCAL #p -8 0
+!!     LOCAL #q -12 0;
+!! PROCEDURE #ReadArgs 353 #Pento.ReadArgs !25 PROC 0 VOID;
+!!     LOCAL #i -4 INTEGER
+!!     LOCAL #buf -68 !26 ARRAY 64 CHAR;
+!! END 0x26d96597
+!! 
+MODULE Pento 0x26d96597 378
+IMPORT Out 0x7c0066d9
+IMPORT Strings 0x49447082
+IMPORT Args 0x0039ec39
+ENDHDR
+
+PROC Pento.PrintCol 0 12 0x00100001
+! PROCEDURE PrintCol(c: ColumnPtr);
+LINE 30
+!   IF c.name # 0X THEN
+LINE 32
+LDLW 12
+NCHECK 32
+LOADC
+JEQZ 36
+!     Out.Char(c.name)
+LINE 33
+LDLW 12
+NCHECK 33
+LOADC
+ALIGNC
+CONST Out.Char
+CALL 1
+RETURN
+LABEL 36
+!     Out.String("("); Out.Int(c.x, 0); Out.String(",");
+LINE 35
+CONST 2
+CONST Pento.%31
+CONST Out.String
+CALL 2
+CONST 0
+LDLW 12
+NCHECK 35
+LDNW 4
+CONST Out.Int
+CALL 2
+CONST 2
+CONST Pento.%32
+CONST Out.String
+CALL 2
+!     Out.Int(c.y, 0); Out.String(")")
+LINE 36
+CONST 0
+LDLW 12
+NCHECK 36
+LDNW 8
+CONST Out.Int
+CALL 2
+CONST 2
+CONST Pento.%33
+CONST Out.String
+CALL 2
+RETURN
+END
+
+PROC Pento.PrintRow 3 12 0x00118001
+! PROCEDURE PrintRow(p: CellPtr);
+LINE 41
+!   r := p;
+LINE 45
+LDLW 12
+STLW -8
+JUMP 38
+LABEL 37
+LDLW -8
+NCHECK 46
+LDNW 12
+STLW -8
+LABEL 38
+!   WHILE r.column.name = 0X DO r := r.right END;
+LINE 46
+LDLW -8
+NCHECK 46
+LDNW 16
+NCHECK 46
+LOADC
+JEQZ 37
+!   q := r;
+LINE 49
+LDLW -8
+STLW -4
+LABEL 39
+!     Out.String(" "); PrintCol(q.column); q := q.right
+LINE 51
+CONST 2
+CONST Pento.%34
+CONST Out.String
+CALL 2
+LDLW -4
+NCHECK 51
+LDNW 16
+CONST Pento.PrintCol
+CALL 1
+LDLW -4
+NCHECK 51
+LDNW 12
+STLW -4
+!   UNTIL q = r;
+LINE 52
+LDLW -4
+LDLW -8
+JNEQ 39
+!   n := 0; q := p.column.head;
+LINE 55
+CONST 0
+STLW -12
+LDLW 12
+NCHECK 55
+LDNW 16
+NCHECK 55
+LDNW 24
+STLW -4
+JUMP 41
+LABEL 40
+INCL -12
+LDLW -4
+NCHECK 56
+LDNW 4
+STLW -4
+LABEL 41
+!   WHILE q # p DO n := n+1; q := q.down END;
+LINE 56
+LDLW -4
+LDLW 12
+JNEQ 40
+!   Out.String("; # "); Out.Int(n,0); Out.String(" of ");
+LINE 57
+CONST 5
+CONST Pento.%1
+CONST Out.String
+CALL 2
+CONST 0
+LDLW -12
+CONST Out.Int
+CALL 2
+CONST 5
+CONST Pento.%2
+CONST Out.String
+CALL 2
+!   Out.Int(p.column.size, 0); Out.String(" choices for ");
+LINE 58
+CONST 0
+LDLW 12
+NCHECK 58
+LDNW 16
+NCHECK 58
+LDNW 12
+CONST Out.Int
+CALL 2
+CONST 14
+CONST Pento.%3
+CONST Out.String
+CALL 2
+!   PrintCol(p.column); Out.Ln
+LINE 59
+LDLW 12
+NCHECK 59
+LDNW 16
+CONST Pento.PrintCol
+CALL 1
+CONST Out.Ln
+CALL 0
+RETURN
+END
+
+PROC Pento.MakeSquare 1 20 0x00010001
+! PROCEDURE MakeSquare(i, j: INTEGER);
+LINE 72
+!   Out.String(" ("); Out.Int(i, 0); Out.String(","); 
+LINE 75
+CONST 3
+CONST Pento.%4
+CONST Out.String
+CALL 2
+CONST 0
+LDLW 12
+CONST Out.Int
+CALL 2
+CONST 2
+CONST Pento.%32
+CONST Out.String
+CALL 2
+!   Out.Int(j, 0); Out.String(")");
+LINE 76
+CONST 0
+LDLW 16
+CONST Out.Int
+CALL 2
+CONST 2
+CONST Pento.%33
+CONST Out.String
+CALL 2
+!   NEW(p); p.name := 0X; p.x := i; p.y := j; p.size := 0;
+LINE 78
+CONST 28
+CONST Pento.Column
+LOCAL -4
+CONST NEW
+CALL 3
+CONST 0
+LDLW -4
+NCHECK 78
+STOREC
+LDLW 12
+LDLW -4
+NCHECK 78
+STNW 4
+LDLW 16
+LDLW -4
+NCHECK 78
+STNW 8
+CONST 0
+LDLW -4
+NCHECK 78
+STNW 12
+!   NEW(p.head); p.head.down := p.head; p.head.up := p.head;
+LINE 79
+CONST 20
+CONST Pento.Cell
+LDLW -4
+NCHECK 79
+CONST 24
+PLUSA
+CONST NEW
+CALL 3
+LDLW -4
+NCHECK 79
+LDNW 24
+LDLW -4
+NCHECK 79
+LDNW 24
+NCHECK 79
+STNW 4
+LDLW -4
+NCHECK 79
+LDNW 24
+LDLW -4
+NCHECK 79
+LDNW 24
+NCHECK 79
+STOREW
+!   p.prev := root.prev; p.next := root; 
+LINE 80
+LDGW Pento.root
+NCHECK 80
+LDNW 16
+LDLW -4
+NCHECK 80
+STNW 16
+LDGW Pento.root
+LDLW -4
+NCHECK 80
+STNW 20
+!   root.prev.next := p; root.prev := p;
+LINE 81
+LDLW -4
+LDGW Pento.root
+NCHECK 81
+LDNW 16
+NCHECK 81
+STNW 20
+LDLW -4
+LDGW Pento.root
+NCHECK 81
+STNW 16
+!   square[i][j] := p; ncols := ncols+1
+LINE 82
+LDLW -4
+CONST Pento.square
+LDLW 12
+CONST 20
+BOUND 82
+CONST 20
+TIMES
+LDLW 16
+CONST 20
+BOUND 82
+PLUS
+STIW
+LDGW Pento.ncols
+INC
+STGW Pento.ncols
+RETURN
+END
+
+PROC Pento.MakePiece 1 20 0x00010001
+! PROCEDURE MakePiece(name: CHAR);
+LINE 86
+!   NEW(p); p.name := name; p.size := 0;
+LINE 89
+CONST 28
+CONST Pento.Column
+LOCAL -4
+CONST NEW
+CALL 3
+LDLC 12
+LDLW -4
+NCHECK 89
+STOREC
+CONST 0
+LDLW -4
+NCHECK 89
+STNW 12
+!   NEW(p.head); p.head.down := p.head; p.head.up := p.head;
+LINE 90
+CONST 20
+CONST Pento.Cell
+LDLW -4
+NCHECK 90
+CONST 24
+PLUSA
+CONST NEW
+CALL 3
+LDLW -4
+NCHECK 90
+LDNW 24
+LDLW -4
+NCHECK 90
+LDNW 24
+NCHECK 90
+STNW 4
+LDLW -4
+NCHECK 90
+LDNW 24
+LDLW -4
+NCHECK 90
+LDNW 24
+NCHECK 90
+STOREW
+!   p.prev := root.prev; p.next := root;
+LINE 91
+LDGW Pento.root
+NCHECK 91
+LDNW 16
+LDLW -4
+NCHECK 91
+STNW 16
+LDGW Pento.root
+LDLW -4
+NCHECK 91
+STNW 20
+!   root.prev.next := p; root.prev := p;
+LINE 92
+LDLW -4
+LDGW Pento.root
+NCHECK 92
+LDNW 16
+NCHECK 92
+STNW 20
+LDLW -4
+LDGW Pento.root
+NCHECK 92
+STNW 16
+!   piece[ORD(name)] := p; ncols := ncols+1
+LINE 93
+LDLW -4
+CONST Pento.piece
+LDLC 12
+CONST 256
+BOUND 93
+STIW
+LDGW Pento.ncols
+INC
+STGW Pento.ncols
+RETURN
+END
+
+PROC Pento.MakeMove 25 20 0x0000e001
+! PROCEDURE MakeMove(name: CHAR; n: INTEGER; xx, yy: Coords);
+LINE 97
+LOCAL -60
+LDLW 20
+CONST 40
+FIXCOPY
+LOCAL -100
+LDLW 24
+CONST 40
+FIXCOPY
+!   r := piece[ORD(name)];
+LINE 101
+CONST Pento.piece
+LDLC 12
+CONST 256
+BOUND 101
+LDIW
+STLW -16
+!   NEW(p); p.left := p; p.right := p;
+LINE 102
+CONST 20
+CONST Pento.Cell
+LOCAL -8
+CONST NEW
+CALL 3
+LDLW -8
+LDLW -8
+NCHECK 102
+STNW 8
+LDLW -8
+LDLW -8
+NCHECK 102
+STNW 12
+!   p.up := r.head.up; p.down := r.head;
+LINE 103
+LDLW -16
+NCHECK 103
+LDNW 24
+NCHECK 103
+LOADW
+LDLW -8
+NCHECK 103
+STOREW
+LDLW -16
+NCHECK 103
+LDNW 24
+LDLW -8
+NCHECK 103
+STNW 4
+!   r.head.up.down := p; r.head.up := p;
+LINE 104
+LDLW -8
+LDLW -16
+NCHECK 104
+LDNW 24
+NCHECK 104
+LOADW
+NCHECK 104
+STNW 4
+LDLW -8
+LDLW -16
+NCHECK 104
+LDNW 24
+NCHECK 104
+STOREW
+!   p.column := r; r.size := r.size+1;
+LINE 105
+LDLW -16
+LDLW -8
+NCHECK 105
+STNW 16
+LDLW -16
+NCHECK 105
+LDNW 12
+INC
+LDLW -16
+NCHECK 105
+STNW 12
+!   FOR k := 0 TO n-1 DO
+LINE 108
+LDLW 16
+DEC
+STLW -20
+CONST 0
+STLW -4
+JUMP 43
+LABEL 42
+!     r := square[xx[k]][yy[k]];
+LINE 109
+CONST Pento.square
+LOCAL -60
+LDLW -4
+CONST 10
+BOUND 109
+LDIW
+CONST 20
+BOUND 109
+CONST 20
+TIMES
+LOCAL -100
+LDLW -4
+CONST 10
+BOUND 109
+LDIW
+CONST 20
+BOUND 109
+PLUS
+LDIW
+STLW -16
+!     NEW(q); q.left := p; q.right := p.right;
+LINE 110
+CONST 20
+CONST Pento.Cell
+LOCAL -12
+CONST NEW
+CALL 3
+LDLW -8
+LDLW -12
+NCHECK 110
+STNW 8
+LDLW -8
+NCHECK 110
+LDNW 12
+LDLW -12
+NCHECK 110
+STNW 12
+!     p.right.left := q; p.right := q;
+LINE 111
+LDLW -12
+LDLW -8
+NCHECK 111
+LDNW 12
+NCHECK 111
+STNW 8
+LDLW -12
+LDLW -8
+NCHECK 111
+STNW 12
+!     q.up := r.head.up; q.down := r.head;
+LINE 112
+LDLW -16
+NCHECK 112
+LDNW 24
+NCHECK 112
+LOADW
+LDLW -12
+NCHECK 112
+STOREW
+LDLW -16
+NCHECK 112
+LDNW 24
+LDLW -12
+NCHECK 112
+STNW 4
+!     r.head.up.down := q; r.head.up := q;
+LINE 113
+LDLW -12
+LDLW -16
+NCHECK 113
+LDNW 24
+NCHECK 113
+LOADW
+NCHECK 113
+STNW 4
+LDLW -12
+LDLW -16
+NCHECK 113
+LDNW 24
+NCHECK 113
+STOREW
+!     q.column := r; r.size := r.size+1;
+LINE 114
+LDLW -16
+LDLW -12
+NCHECK 114
+STNW 16
+LDLW -16
+NCHECK 114
+LDNW 12
+INC
+LDLW -16
+NCHECK 114
+STNW 12
+!     p := q
+LINE 115
+LDLW -12
+STLW -8
+!   FOR k := 0 TO n-1 DO
+LINE 108
+INCL -4
+LABEL 43
+LDLW -4
+LDLW -20
+JLEQ 42
+!   nrows := nrows+1
+LINE 118
+LDGW Pento.nrows
+INC
+STGW Pento.nrows
+RETURN
+END
+
+PROC Pento.CreateBoard 2 20 0
+! PROCEDURE CreateBoard;
+LINE 122
+!   boundx := 14; boundy := 5;
+LINE 126
+CONST 14
+STGW Pento.boundx
+CONST 5
+STGW Pento.boundy
+!   Out.String("bounds "); Out.Int(boundx, 0); Out.String(" ");
+LINE 127
+CONST 8
+CONST Pento.%5
+CONST Out.String
+CALL 2
+CONST 0
+LDGW Pento.boundx
+CONST Out.Int
+CALL 2
+CONST 2
+CONST Pento.%34
+CONST Out.String
+CALL 2
+!   Out.Int(boundy, 0); Out.Ln;
+LINE 128
+CONST 0
+LDGW Pento.boundy
+CONST Out.Int
+CALL 2
+CONST Out.Ln
+CALL 0
+!   Out.String("squares");
+LINE 130
+CONST 8
+CONST Pento.%6
+CONST Out.String
+CALL 2
+!   FOR i := 0 TO 9 DO 
+LINE 131
+CONST 0
+STLW -4
+JUMP 45
+LABEL 44
+!     FOR j := 0 TO 5 DO 
+LINE 132
+CONST 0
+STLW -8
+JUMP 47
+LABEL 46
+!       MakeSquare(i+j, j) 
+LINE 133
+LDLW -8
+LDLW -4
+LDLW -8
+PLUS
+CONST Pento.MakeSquare
+CALL 2
+!     FOR j := 0 TO 5 DO 
+LINE 132
+INCL -8
+LABEL 47
+LDLW -8
+CONST 5
+JLEQ 46
+!   FOR i := 0 TO 9 DO 
+LINE 131
+INCL -4
+LABEL 45
+LDLW -4
+CONST 9
+JLEQ 44
+!   Out.Ln
+LINE 136
+CONST Out.Ln
+CALL 0
+RETURN
+END
+
+PROC Pento.Feasible 22 20 0
+! PROCEDURE Feasible(n: INTEGER; xx, yy: Coords): BOOLEAN;
+LINE 140
+LOCAL -48
+LDLW 16
+CONST 40
+FIXCOPY
+LOCAL -88
+LDLW 20
+CONST 40
+FIXCOPY
+!   FOR k := 0 TO n-1 DO
+LINE 143
+LDLW 12
+DEC
+STLW -8
+CONST 0
+STLW -4
+JUMP 49
+LABEL 48
+!     IF square[xx[k]][yy[k]] = NIL THEN RETURN FALSE END
+LINE 144
+CONST Pento.square
+LOCAL -48
+LDLW -4
+CONST 10
+BOUND 144
+LDIW
+CONST 20
+BOUND 144
+CONST 20
+TIMES
+LOCAL -88
+LDLW -4
+CONST 10
+BOUND 144
+LDIW
+CONST 20
+BOUND 144
+PLUS
+LDIW
+JNEQZ 51
+CONST 0
+RETURNW
+LABEL 51
+!   FOR k := 0 TO n-1 DO
+LINE 143
+INCL -4
+LABEL 49
+LDLW -4
+LDLW -8
+JLEQ 48
+!   RETURN TRUE
+LINE 146
+CONST 1
+RETURNW
+END
+
+PROC Pento.CreatePiece 59 20 0
+! PROCEDURE CreatePiece(name: CHAR; rots, refls: INTEGER; 
+LINE 150
+LOCAL 24
+LDLW 28
+FLEXCOPY
+!   MakePiece(name);
+LINE 156
+LDLC 12
+ALIGNC
+CONST Pento.MakePiece
+CALL 1
+!   Out.String(" "); Out.Char(name);
+LINE 157
+CONST 2
+CONST Pento.%34
+CONST Out.String
+CALL 2
+LDLC 12
+ALIGNC
+CONST Out.Char
+CALL 1
+!   xmin := 0; xmax := 0; ymin := 0; ymax := 0; 
+LINE 160
+CONST 0
+STLW -32
+CONST 0
+STLW -36
+CONST 0
+STLW -40
+CONST 0
+STLW -44
+!   i := 0; j := 0; n := 0;
+LINE 161
+CONST 0
+STLW -4
+CONST 0
+STLW -8
+CONST 0
+STLW -16
+!   FOR k := 0 TO Strings.Length(layout)-1 DO
+LINE 162
+LDLW 28
+LDLW 24
+CONST Strings.Length
+CALLW 2
+DEC
+STLW -208
+CONST 0
+STLW -12
+JUMP 53
+LABEL 52
+!     CASE layout[k] OF
+LINE 163
+LDLW 24
+LDLW -12
+LDLW 28
+BOUND 163
+LDIC
+CONST 120
+TESTGEQ 59
+CONST 46
+MINUS
+JCASE 2
+CASEL 57
+CASEL 58
+JUMP 54
+LABEL 59
+CONST 120
+JNEQ 54
+! 	xx[n] := i; yy[n] := j; n := n+1;
+LINE 165
+LDLW -4
+LOCAL -84
+LDLW -16
+CONST 10
+BOUND 165
+STIW
+LDLW -8
+LOCAL -124
+LDLW -16
+CONST 10
+BOUND 165
+STIW
+INCL -16
+! 	IF i > xmax THEN xmax := i END;
+LINE 166
+LDLW -4
+LDLW -36
+JLEQ 61
+LDLW -4
+STLW -36
+LABEL 61
+!         IF j > ymax THEN ymax := j END;
+LINE 167
+LDLW -8
+LDLW -44
+JLEQ 63
+LDLW -8
+STLW -44
+LABEL 63
+!         i := i+1
+LINE 168
+INCL -4
+JUMP 55
+LABEL 57
+!     | '.': i := i+1			(* Skip a square *)
+LINE 169
+INCL -4
+JUMP 55
+LABEL 58
+!     | '/': j := j+1; i := 0		(* Move to a new row *)
+LINE 170
+INCL -8
+CONST 0
+STLW -4
+JUMP 55
+LABEL 54
+ERROR E_CASE 163
+LABEL 55
+!   FOR k := 0 TO Strings.Length(layout)-1 DO
+LINE 162
+INCL -12
+LABEL 53
+LDLW -12
+LDLW -208
+JLEQ 52
+!   FOR r := 0 TO refls-1 DO
+LINE 175
+LDLW 20
+DEC
+STLW -212
+CONST 0
+STLW -24
+JUMP 65
+LABEL 64
+!     FOR m := 0 TO rots-1 DO
+LINE 177
+LDLW 16
+DEC
+STLW -216
+CONST 0
+STLW -20
+JUMP 67
+LABEL 66
+!       FOR j := -ymin TO boundy - ymax DO
+LINE 179
+LDGW Pento.boundy
+LDLW -44
+MINUS
+STLW -220
+LDLW -40
+UMINUS
+STLW -8
+JUMP 69
+LABEL 68
+!         FOR i := -xmin TO boundx - xmax DO
+LINE 180
+LDGW Pento.boundx
+LDLW -36
+MINUS
+STLW -224
+LDLW -32
+UMINUS
+STLW -4
+JUMP 71
+LABEL 70
+!           FOR k := 0 TO n-1 DO 
+LINE 181
+LDLW -16
+DEC
+STLW -228
+CONST 0
+STLW -12
+JUMP 73
+LABEL 72
+!             uu[k] := xx[k]+i; vv[k] := yy[k]+j 
+LINE 182
+LOCAL -84
+LDLW -12
+CONST 10
+BOUND 182
+LDIW
+LDLW -4
+PLUS
+LOCAL -164
+LDLW -12
+CONST 10
+BOUND 182
+STIW
+LOCAL -124
+LDLW -12
+CONST 10
+BOUND 182
+LDIW
+LDLW -8
+PLUS
+LOCAL -204
+LDLW -12
+CONST 10
+BOUND 182
+STIW
+!           FOR k := 0 TO n-1 DO 
+LINE 181
+INCL -12
+LABEL 73
+LDLW -12
+LDLW -228
+JLEQ 72
+!           IF Feasible(n, uu, vv) THEN MakeMove(name, n, uu, vv) END
+LINE 185
+LOCAL -204
+LOCAL -164
+LDLW -16
+CONST Pento.Feasible
+CALLW 3
+JUMPF 75
+LOCAL -204
+LOCAL -164
+LDLW -16
+LDLC 12
+ALIGNC
+CONST Pento.MakeMove
+CALL 4
+LABEL 75
+!         FOR i := -xmin TO boundx - xmax DO
+LINE 180
+INCL -4
+LABEL 71
+LDLW -4
+LDLW -224
+JLEQ 70
+!       FOR j := -ymin TO boundy - ymax DO
+LINE 179
+INCL -8
+LABEL 69
+LDLW -8
+LDLW -220
+JLEQ 68
+!       FOR k := 0 TO n-1 DO 
+LINE 190
+LDLW -16
+DEC
+STLW -232
+CONST 0
+STLW -12
+JUMP 77
+LABEL 76
+!         z := xx[k]; xx[k] := (MAX-1) - yy[k]; yy[k] := z 
+LINE 191
+LOCAL -84
+LDLW -12
+CONST 10
+BOUND 191
+LDIW
+STLW -28
+CONST 19
+LOCAL -124
+LDLW -12
+CONST 10
+BOUND 191
+LDIW
+MINUS
+LOCAL -84
+LDLW -12
+CONST 10
+BOUND 191
+STIW
+LDLW -28
+LOCAL -124
+LDLW -12
+CONST 10
+BOUND 191
+STIW
+!       FOR k := 0 TO n-1 DO 
+LINE 190
+INCL -12
+LABEL 77
+LDLW -12
+LDLW -232
+JLEQ 76
+!       z := xmax; xmax := (MAX-1) - ymin; ymin := xmin;
+LINE 193
+LDLW -36
+STLW -28
+CONST 19
+LDLW -40
+MINUS
+STLW -36
+LDLW -32
+STLW -40
+!       xmin := (MAX-1) - ymax; ymax := z
+LINE 194
+CONST 19
+LDLW -44
+MINUS
+STLW -32
+LDLW -28
+STLW -44
+!     FOR m := 0 TO rots-1 DO
+LINE 177
+INCL -20
+LABEL 67
+LDLW -20
+LDLW -216
+JLEQ 66
+!     FOR k := 0 TO n-1 DO 
+LINE 198
+LDLW -16
+DEC
+STLW -236
+CONST 0
+STLW -12
+JUMP 79
+LABEL 78
+!       xx[k] := (MAX-1) - xx[k] 
+LINE 199
+CONST 19
+LOCAL -84
+LDLW -12
+CONST 10
+BOUND 199
+LDIW
+MINUS
+LOCAL -84
+LDLW -12
+CONST 10
+BOUND 199
+STIW
+!     FOR k := 0 TO n-1 DO 
+LINE 198
+INCL -12
+LABEL 79
+LDLW -12
+LDLW -236
+JLEQ 78
+!     z := xmax; xmax := (MAX-1) - xmin; xmin := (MAX-1) - z
+LINE 201
+LDLW -36
+STLW -28
+CONST 19
+LDLW -32
+MINUS
+STLW -36
+CONST 19
+LDLW -28
+MINUS
+STLW -32
+!   FOR r := 0 TO refls-1 DO
+LINE 175
+INCL -24
+LABEL 65
+LDLW -24
+LDLW -212
+JLEQ 64
+RETURN
+END
+
+PROC Pento.CreateGame 0 24 0
+! PROCEDURE CreateGame;
+LINE 206
+!   NEW(root);
+LINE 208
+CONST 28
+CONST Pento.Column
+CONST Pento.root
+CONST NEW
+CALL 3
+!   root.prev := root; root.next := root;
+LINE 209
+LDGW Pento.root
+LDGW Pento.root
+NCHECK 209
+STNW 16
+LDGW Pento.root
+LDGW Pento.root
+NCHECK 209
+STNW 20
+!   CreateBoard;
+LINE 210
+CONST Pento.CreateBoard
+CALL 0
+!   Out.String("pieces");
+LINE 212
+CONST 7
+CONST Pento.%7
+CONST Out.String
+CALL 2
+!   CreatePiece('F', 4, 2, "xx/.xx/.x");
+LINE 213
+CONST 10
+CONST Pento.%8
+CONST 2
+CONST 4
+CONST 70
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('I', 2, 1, "xxxxx");
+LINE 214
+CONST 6
+CONST Pento.%9
+CONST 1
+CONST 2
+CONST 73
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('L', 4, 2, "xxxx/x");
+LINE 215
+CONST 7
+CONST Pento.%10
+CONST 2
+CONST 4
+CONST 76
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('N', 4, 2, "xxx/..xx");
+LINE 216
+CONST 9
+CONST Pento.%11
+CONST 2
+CONST 4
+CONST 78
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('P', 4, 2, "xxx/xx.");
+LINE 217
+CONST 8
+CONST Pento.%12
+CONST 2
+CONST 4
+CONST 80
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('T', 4, 1, "xxx/.x/.x");
+LINE 218
+CONST 10
+CONST Pento.%13
+CONST 1
+CONST 4
+CONST 84
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('U', 4, 1, "xx/x/xx");
+LINE 219
+CONST 8
+CONST Pento.%14
+CONST 1
+CONST 4
+CONST 85
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('V', 4, 1, "xxx/x/x");
+LINE 220
+CONST 8
+CONST Pento.%15
+CONST 1
+CONST 4
+CONST 86
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('W', 4, 1, "x/xx/.xx");
+LINE 221
+CONST 9
+CONST Pento.%16
+CONST 1
+CONST 4
+CONST 87
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('X', 1, 1, ".x/xxx/.x");
+LINE 222
+CONST 10
+CONST Pento.%17
+CONST 1
+CONST 1
+CONST 88
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('Y', 4, 2, "xxxx/.x");
+LINE 223
+CONST 8
+CONST Pento.%18
+CONST 2
+CONST 4
+CONST 89
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   CreatePiece('Z', 2, 2, ".xx/.x/xx");
+LINE 224
+CONST 10
+CONST Pento.%19
+CONST 2
+CONST 2
+CONST 90
+ALIGNC
+CONST Pento.CreatePiece
+CALL 5
+!   Out.Ln;
+LINE 225
+CONST Out.Ln
+CALL 0
+!   Out.String("# "); Out.Int(ncols, 0); Out.String(" columns, ");
+LINE 227
+CONST 3
+CONST Pento.%20
+CONST Out.String
+CALL 2
+CONST 0
+LDGW Pento.ncols
+CONST Out.Int
+CALL 2
+CONST 11
+CONST Pento.%21
+CONST Out.String
+CALL 2
+!   Out.Int(nrows, 0); Out.String(" rows"); Out.Ln
+LINE 228
+CONST 0
+LDGW Pento.nrows
+CONST Out.Int
+CALL 2
+CONST 6
+CONST Pento.%22
+CONST Out.String
+CALL 2
+CONST Out.Ln
+CALL 0
+RETURN
+END
+
+PROC Pento.Cover 2 24 0x00118001
+! PROCEDURE Cover(p: ColumnPtr);
+LINE 239
+!   p.prev.next := p.next; p.next.prev := p.prev;
+LINE 243
+LDLW 12
+NCHECK 243
+LDNW 20
+LDLW 12
+NCHECK 243
+LDNW 16
+NCHECK 243
+STNW 20
+LDLW 12
+NCHECK 243
+LDNW 16
+LDLW 12
+NCHECK 243
+LDNW 20
+NCHECK 243
+STNW 16
+!   q := p.head.down;
+LINE 246
+LDLW 12
+NCHECK 246
+LDNW 24
+NCHECK 246
+LDNW 4
+STLW -4
+JUMP 81
+LABEL 80
+!     r := q.right;
+LINE 248
+LDLW -4
+NCHECK 248
+LDNW 12
+STLW -8
+JUMP 83
+LABEL 82
+!       r.up.down := r.down; r.down.up := r.up;
+LINE 250
+LDLW -8
+NCHECK 250
+LDNW 4
+LDLW -8
+NCHECK 250
+LOADW
+NCHECK 250
+STNW 4
+LDLW -8
+NCHECK 250
+LOADW
+LDLW -8
+NCHECK 250
+LDNW 4
+NCHECK 250
+STOREW
+!       r.column.size := r.column.size - 1; 
+LINE 251
+LDLW -8
+NCHECK 251
+LDNW 16
+NCHECK 251
+LDNW 12
+DEC
+LDLW -8
+NCHECK 251
+LDNW 16
+NCHECK 251
+STNW 12
+!       r := r.right
+LINE 252
+LDLW -8
+NCHECK 252
+LDNW 12
+STLW -8
+LABEL 83
+!     WHILE r # q DO
+LINE 249
+LDLW -8
+LDLW -4
+JNEQ 82
+!     q := q.down
+LINE 254
+LDLW -4
+NCHECK 254
+LDNW 4
+STLW -4
+LABEL 81
+!   WHILE q # p.head DO
+LINE 247
+LDLW -4
+LDLW 12
+NCHECK 247
+LDNW 24
+JNEQ 80
+RETURN
+END
+
+PROC Pento.Uncover 2 24 0x00118001
+! PROCEDURE Uncover(p: ColumnPtr);
+LINE 259
+!   p.prev.next := p; p.next.prev := p;
+LINE 263
+LDLW 12
+LDLW 12
+NCHECK 263
+LDNW 16
+NCHECK 263
+STNW 20
+LDLW 12
+LDLW 12
+NCHECK 263
+LDNW 20
+NCHECK 263
+STNW 16
+!   q := p.head.up;
+LINE 266
+LDLW 12
+NCHECK 266
+LDNW 24
+NCHECK 266
+LOADW
+STLW -4
+JUMP 85
+LABEL 84
+!     r := q.left;
+LINE 268
+LDLW -4
+NCHECK 268
+LDNW 8
+STLW -8
+JUMP 87
+LABEL 86
+!       r.up.down := r; r.down.up := r;
+LINE 270
+LDLW -8
+LDLW -8
+NCHECK 270
+LOADW
+NCHECK 270
+STNW 4
+LDLW -8
+LDLW -8
+NCHECK 270
+LDNW 4
+NCHECK 270
+STOREW
+!       r.column.size := r.column.size + 1; 
+LINE 271
+LDLW -8
+NCHECK 271
+LDNW 16
+NCHECK 271
+LDNW 12
+INC
+LDLW -8
+NCHECK 271
+LDNW 16
+NCHECK 271
+STNW 12
+!       r := r.left
+LINE 272
+LDLW -8
+NCHECK 272
+LDNW 8
+STLW -8
+LABEL 87
+!     WHILE r # q DO
+LINE 269
+LDLW -8
+LDLW -4
+JNEQ 86
+!     q := q.up
+LINE 274
+LDLW -4
+NCHECK 274
+LOADW
+STLW -4
+LABEL 85
+!   WHILE q # p.head DO
+LINE 267
+LDLW -4
+LDLW 12
+NCHECK 267
+LDNW 24
+JNEQ 84
+RETURN
+END
+
+PROC Pento.ChooseColumn 2 24 0x00018001
+! PROCEDURE ChooseColumn(): ColumnPtr;
+LINE 279
+!   IF qflag THEN
+LINE 282
+LDGC Pento.qflag
+JUMPF 89
+!     col := root.next
+LINE 284
+LDGW Pento.root
+NCHECK 284
+LDNW 20
+STLW -8
+JUMP 88
+LABEL 89
+!   ELSIF pflag THEN
+LINE 285
+LDGC Pento.pflag
+JUMPF 90
+!     col := root.next;
+LINE 287
+LDGW Pento.root
+NCHECK 287
+LDNW 20
+STLW -8
+JUMP 92
+LABEL 91
+LDLW -8
+NCHECK 288
+LDNW 20
+STLW -8
+LABEL 92
+!     WHILE col.name = 0X DO col := col.next END
+LINE 288
+LDLW -8
+NCHECK 288
+LOADC
+JEQZ 91
+JUMP 88
+LABEL 90
+!     col := root.next;
+LINE 291
+LDGW Pento.root
+NCHECK 291
+LDNW 20
+STLW -8
+!     c := col.next;
+LINE 292
+LDLW -8
+NCHECK 292
+LDNW 20
+STLW -4
+JUMP 94
+LABEL 93
+!       IF c.size < col.size THEN col := c END;
+LINE 294
+LDLW -4
+NCHECK 294
+LDNW 12
+LDLW -8
+NCHECK 294
+LDNW 12
+JGEQ 96
+LDLW -4
+STLW -8
+LABEL 96
+!       c := c.next
+LINE 295
+LDLW -4
+NCHECK 295
+LDNW 20
+STLW -4
+LABEL 94
+!     WHILE c # root DO
+LINE 293
+LDLW -4
+LDGW Pento.root
+JNEQ 93
+LABEL 88
+!   RETURN col
+LINE 299
+LDLW -8
+RETURNW
+END
+
+PROC Pento.PrintState 2 24 0
+! PROCEDURE PrintState(cmd: ARRAY OF CHAR; count, level: INTEGER);
+LINE 303
+LOCAL 12
+LDLW 16
+FLEXCOPY
+!   Out.String(cmd);
+LINE 306
+LDLW 16
+LDLW 12
+CONST Out.String
+CALL 2
+!   IF count > 0 THEN Out.String(" "); Out.Int(count, 0) END; 
+LINE 307
+LDLW 20
+JLEQZ 98
+CONST 2
+CONST Pento.%34
+CONST Out.String
+CALL 2
+CONST 0
+LDLW 20
+CONST Out.Int
+CALL 2
+LABEL 98
+!   Out.Ln;
+LINE 308
+CONST Out.Ln
+CALL 0
+!   FOR k := 0 TO level-1 DO 
+LINE 309
+LDLW 24
+DEC
+STLW -8
+CONST 0
+STLW -4
+JUMP 100
+LABEL 99
+!     Out.String("place"); PrintRow(choice[k]) 
+LINE 310
+CONST 6
+CONST Pento.%23
+CONST Out.String
+CALL 2
+CONST Pento.choice
+LDLW -4
+CONST 20
+BOUND 310
+LDIW
+CONST Pento.PrintRow
+CALL 1
+!   FOR k := 0 TO level-1 DO 
+LINE 309
+INCL -4
+LABEL 100
+LDLW -4
+LDLW -8
+JLEQ 99
+!   Out.String("done"); Out.Ln
+LINE 312
+CONST 5
+CONST Pento.%24
+CONST Out.String
+CALL 2
+CONST Out.Ln
+CALL 0
+RETURN
+END
+
+PROC Pento.Solve 3 24 0x0001c001
+! PROCEDURE Solve(level: INTEGER);
+LINE 316
+!   IF root.next = root THEN
+LINE 319
+LDGW Pento.root
+NCHECK 319
+LDNW 20
+LDGW Pento.root
+JNEQ 102
+!     count := count+1; PrintState("solution", count, level); RETURN
+LINE 320
+LDGW Pento.count
+INC
+STGW Pento.count
+LDLW 12
+LDGW Pento.count
+CONST 9
+CONST Pento.%25
+CONST Pento.PrintState
+CALL 4
+RETURN
+LABEL 102
+!   col := ChooseColumn();
+LINE 323
+CONST Pento.ChooseColumn
+CALLW 0
+STLW -4
+!   IF col.size = 0 THEN RETURN END;
+LINE 324
+LDLW -4
+NCHECK 324
+LDNW 12
+JNEQZ 104
+RETURN
+LABEL 104
+!   Cover(col);
+LINE 325
+LDLW -4
+CONST Pento.Cover
+CALL 1
+!   p := col.head.down;
+LINE 328
+LDLW -4
+NCHECK 328
+LDNW 24
+NCHECK 328
+LDNW 4
+STLW -8
+JUMP 106
+LABEL 105
+!     steps := steps+1;
+LINE 330
+LDGW Pento.steps
+INC
+STGW Pento.steps
+!     choice[level] := p;
+LINE 331
+LDLW -8
+CONST Pento.choice
+LDLW 12
+CONST 20
+BOUND 331
+STIW
+!     IF (verbosity > 0) & (steps MOD verbosity = 0) THEN
+LINE 332
+LDGW Pento.verbosity
+JLEQZ 108
+LDGW Pento.steps
+LDGW Pento.verbosity
+ZCHECK 332
+MOD
+JNEQZ 108
+!       PrintState("progress", 0, level+1)
+LINE 333
+LDLW 12
+INC
+CONST 0
+CONST 9
+CONST Pento.%26
+CONST Pento.PrintState
+CALL 4
+LABEL 108
+!     q := p.right;
+LINE 337
+LDLW -8
+NCHECK 337
+LDNW 12
+STLW -12
+JUMP 110
+LABEL 109
+LDLW -12
+NCHECK 338
+LDNW 16
+CONST Pento.Cover
+CALL 1
+LDLW -12
+NCHECK 338
+LDNW 12
+STLW -12
+LABEL 110
+!     WHILE q # p DO Cover(q.column); q := q.right END;
+LINE 338
+LDLW -12
+LDLW -8
+JNEQ 109
+!     Solve(level+1);
+LINE 340
+LDLW 12
+INC
+CONST Pento.Solve
+CALL 1
+!     q := p.left;
+LINE 343
+LDLW -8
+NCHECK 343
+LDNW 8
+STLW -12
+JUMP 112
+LABEL 111
+LDLW -12
+NCHECK 344
+LDNW 16
+CONST Pento.Uncover
+CALL 1
+LDLW -12
+NCHECK 344
+LDNW 8
+STLW -12
+LABEL 112
+!     WHILE q # p DO Uncover(q.column); q := q.left END;
+LINE 344
+LDLW -12
+LDLW -8
+JNEQ 111
+!     p := p.down
+LINE 346
+LDLW -8
+NCHECK 346
+LDNW 4
+STLW -8
+LABEL 106
+!   WHILE p # col.head DO
+LINE 329
+LDLW -8
+LDLW -4
+NCHECK 329
+LDNW 24
+JNEQ 105
+!   Uncover(col)
+LINE 349
+LDLW -4
+CONST Pento.Uncover
+CALL 1
+RETURN
+END
+
+PROC Pento.ReadArgs 18 24 0
+! PROCEDURE ReadArgs;
+LINE 353
+!   FOR i := 1 TO Args.argc-1 DO
+LINE 356
+LDGW Args.argc
+DEC
+STLW -72
+CONST 1
+STLW -4
+JUMP 114
+LABEL 113
+!     Args.GetArg(i, buf);
+LINE 357
+CONST 64
+LOCAL -68
+LDLW -4
+CONST Args.GetArg
+CALL 3
+!     IF buf = "-p" THEN
+LINE 358
+CONST 3
+CONST Pento.%27
+CONST 64
+LOCAL -68
+CONST COMPARE
+CALLW 4
+JNEQZ 116
+!       pflag := TRUE
+LINE 359
+CONST 1
+STGC Pento.pflag
+JUMP 118
+LABEL 116
+CONST 3
+CONST Pento.%28
+!     ELSIF buf = "-q" THEN
+LINE 360
+CONST 64
+LOCAL -68
+CONST COMPARE
+CALLW 4
+JNEQZ 117
+!       qflag := TRUE
+LINE 361
+CONST 1
+STGC Pento.qflag
+JUMP 118
+LABEL 117
+CONST 3
+CONST Pento.%29
+!     ELSIF buf = "-v" THEN
+LINE 362
+CONST 64
+LOCAL -68
+CONST COMPARE
+CALLW 4
+JNEQZ 118
+!       IF verbosity = 0 THEN
+LINE 363
+LDGW Pento.verbosity
+JNEQZ 120
+!         verbosity := 1000
+LINE 364
+CONST 1000
+STGW Pento.verbosity
+JUMP 118
+LABEL 120
+! 	verbosity := verbosity DIV 10
+LINE 366
+LDGW Pento.verbosity
+CONST 10
+DIV
+STGW Pento.verbosity
+LABEL 118
+!   FOR i := 1 TO Args.argc-1 DO
+LINE 356
+INCL -4
+LABEL 114
+LDLW -4
+LDLW -72
+JLEQ 113
+RETURN
+END
+
+PROC Pento.%main 0 24 0
+!   ReadArgs;
+LINE 374
+CONST Pento.ReadArgs
+CALL 0
+!   CreateGame;
+LINE 375
+CONST Pento.CreateGame
+CALL 0
+!   Solve(0);
+LINE 376
+CONST 0
+CONST Pento.Solve
+CALL 1
+!   Out.String("finish"); Out.Ln
+LINE 377
+CONST 7
+CONST Pento.%30
+CONST Out.String
+CALL 2
+CONST Out.Ln
+CALL 0
+RETURN
+END
+
+! Global variables
+GLOBAL Pento.root 4
+GLOBAL Pento.ncols 4
+GLOBAL Pento.nrows 4
+GLOBAL Pento.boundx 4
+GLOBAL Pento.boundy 4
+GLOBAL Pento.square 1600
+GLOBAL Pento.piece 1024
+GLOBAL Pento.count 4
+GLOBAL Pento.steps 4
+GLOBAL Pento.choice 80
+GLOBAL Pento.pflag 1
+GLOBAL Pento.qflag 1
+GLOBAL Pento.verbosity 4
+
+! Pointer map
+DEFINE Pento.%gcmap
+WORD GC_BASE
+WORD Pento.root
+WORD 0
+WORD GC_BASE
+WORD Pento.square
+WORD GC_BLOCK
+WORD 0
+WORD 400
+WORD GC_BASE
+WORD Pento.piece
+WORD GC_BLOCK
+WORD 0
+WORD 256
+WORD GC_BASE
+WORD Pento.choice
+WORD GC_MAP
+WORD 0x001fffff
+WORD GC_END
+
+! String "; # "
+DEFINE Pento.%1
+STRING 3B20232000
+
+! String " of "
+DEFINE Pento.%2
+STRING 206F662000
+
+! String " choices for "
+DEFINE Pento.%3
+STRING 2063686F6963657320666F722000
+
+! String " ("
+DEFINE Pento.%4
+STRING 202800
+
+! String "bounds "
+DEFINE Pento.%5
+STRING 626F756E64732000
+
+! String "squares"
+DEFINE Pento.%6
+STRING 7371756172657300
+
+! String "pieces"
+DEFINE Pento.%7
+STRING 70696563657300
+
+! String "xx/.xx/.x"
+DEFINE Pento.%8
+STRING 78782F2E78782F2E7800
+
+! String "xxxxx"
+DEFINE Pento.%9
+STRING 787878787800
+
+! String "xxxx/x"
+DEFINE Pento.%10
+STRING 787878782F7800
+
+! String "xxx/..xx"
+DEFINE Pento.%11
+STRING 7878782F2E2E787800
+
+! String "xxx/xx."
+DEFINE Pento.%12
+STRING 7878782F78782E00
+
+! String "xxx/.x/.x"
+DEFINE Pento.%13
+STRING 7878782F2E782F2E7800
+
+! String "xx/x/xx"
+DEFINE Pento.%14
+STRING 78782F782F787800
+
+! String "xxx/x/x"
+DEFINE Pento.%15
+STRING 7878782F782F7800
+
+! String "x/xx/.xx"
+DEFINE Pento.%16
+STRING 782F78782F2E787800
+
+! String ".x/xxx/.x"
+DEFINE Pento.%17
+STRING 2E782F7878782F2E7800
+
+! String "xxxx/.x"
+DEFINE Pento.%18
+STRING 787878782F2E7800
+
+! String ".xx/.x/xx"
+DEFINE Pento.%19
+STRING 2E78782F2E782F787800
+
+! String "# "
+DEFINE Pento.%20
+STRING 232000
+
+! String " columns, "
+DEFINE Pento.%21
+STRING 20636F6C756D6E732C2000
+
+! String " rows"
+DEFINE Pento.%22
+STRING 20726F777300
+
+! String "place"
+DEFINE Pento.%23
+STRING 706C61636500
+
+! String "done"
+DEFINE Pento.%24
+STRING 646F6E6500
+
+! String "solution"
+DEFINE Pento.%25
+STRING 736F6C7574696F6E00
+
+! String "progress"
+DEFINE Pento.%26
+STRING 70726F677265737300
+
+! String "-p"
+DEFINE Pento.%27
+STRING 2D7000
+
+! String "-q"
+DEFINE Pento.%28
+STRING 2D7100
+
+! String "-v"
+DEFINE Pento.%29
+STRING 2D7600
+
+! String "finish"
+DEFINE Pento.%30
+STRING 66696E69736800
+
+! String "("
+DEFINE Pento.%31
+STRING 2800
+
+! String ","
+DEFINE Pento.%32
+STRING 2C00
+
+! String ")"
+DEFINE Pento.%33
+STRING 2900
+
+! String " "
+DEFINE Pento.%34
+STRING 2000
+
+! Descriptor for Cell
+DEFINE Pento.Cell
+WORD 0x0000003f
+WORD 0
+WORD Pento.Cell.%anc
+
+DEFINE Pento.Cell.%anc
+WORD Pento.Cell
+
+! Descriptor for Column
+DEFINE Pento.Column
+WORD 0x000000e1
+WORD 0
+WORD Pento.Column.%anc
+
+DEFINE Pento.Column.%anc
+WORD Pento.Column
+
+! End of file

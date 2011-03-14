@@ -1,0 +1,352 @@
+%{
+/*
+ *               Bison source of a
+ *               parser for the Oberon-2 Programming Language
+ *
+ *       Author: James Power,
+ *  Affiliation: Dept. of Computer Science, National University of Ireland,
+ *               Maynooth, Co. Kildare, Ireland.
+ * Last Revised: 24 November 1998
+ *
+ *     Based on: "The Programming Language Oberon"
+ *               H. Mossenbock, N. Wirth, ETH Zurich, 1992-1996
+ *
+ * For more information on Oberon see http://www.oberon.ethz.ch/language.html
+ */
+ 
+  #include<stdio.h>;
+
+  extern char *yytext;
+  extern int yylineno;
+  int yyerror(char *msg);
+
+%}
+
+%token ident
+%token CONSTchar CONSTstring     CONSTnumber
+%token ARRAY     IMPORT     RETURN
+%token OBEGIN    IN         THEN
+%token BY        IS         TO
+%token CASE      LOOP       TYPE
+%token CONST     MOD        UNTIL
+%token DIV       MODULE     VAR
+%token DO        NIL        WHILE
+%token ELSE      OF         WITH
+%token ELSIF     OR
+%token END       POINTER
+%token EXIT      PROCEDURE
+%token FOR       RECORD
+%token IF        REPEAT
+
+%token ASSIGN    LTEQ GTEQ DOTDOT
+
+%nonassoc '='  '#'  '<'  LTEQ  '>'  GTEQ  IN  IS
+%nonassoc UPLUS UMINUS
+%left '+'  '-'  OR
+%left '*'  '/'  DIV  MOD  '&'
+
+
+%%
+
+Module       : 
+{ ; }
+  MODULE ident ';' optImportList DeclSeq optStatBody END ident '.'
+;
+
+optImportList   : 
+  IMPORT ImportSpecList ';'
+| /* Empty */
+;
+
+ImportSpecList : 
+  ImportSpec ',' ImportSpecList
+| ImportSpec
+;
+
+ImportSpec    :
+  ident ASSIGN ident
+| ident
+;
+
+optStatBody  :
+  OBEGIN StatementSeq
+| /* Empty */
+;
+
+DeclSeq      : 
+  CVT_List ProcList
+;
+
+CVT_List      :
+  CONST ConstDeclList CVT_List 
+| TYPE  TypeDeclList  CVT_List
+| VAR   VarDeclList   CVT_List
+| /* Empty */
+;
+
+ProcList     :
+  ProcDecl ';' ProcList
+| ForwardDecl ';' ProcList
+| /* Empty */
+;
+
+ConstDeclList :
+  IdentDef '=' ConstExpr ';' ConstDeclList
+| /* Empty */
+;
+
+TypeDeclList : 
+  IdentDef '=' Type ';' TypeDeclList
+| /* Empty */
+;
+
+VarDeclList  : 
+  IdentDefList ':' Type ';' VarDeclList
+| /* Empty */
+;
+
+ProcDecl     : 
+  PROCEDURE optReceiver IdentDef optFormalPars ';' 
+            DeclSeq optStatBody 
+  END ident
+;
+
+ForwardDecl  : 
+  PROCEDURE '^' optReceiver IdentDef optFormalPars
+;
+
+optFormalPars : 
+  '(' optFPList ')' ':' Qualident
+| '(' optFPList ')' 
+| /* Empty */
+;
+
+optFPList    :
+  FPList
+| /* Empty */
+;
+
+FPList       :
+  FormalParam ';' FPList
+| FormalParam
+;
+
+FormalParam  :
+  optVAR IdentList ':' Type 
+
+IdentList    :
+  ident
+| ident ',' IdentList
+;
+
+optReceiver     : 
+  '(' optVAR ident ':' ident ')'
+| /* Empty */
+;
+
+optVAR       :
+  VAR
+| /* Empty */
+;
+ 
+Type         : 
+  Qualident
+| ARRAY ConstExprList OF Type 
+| ARRAY               OF Type 
+| RECORD '('Qualident')' FieldList END
+| RECORD                 FieldList END
+| POINTER TO Type
+| PROCEDURE optFormalPars
+;
+
+ConstExprList :
+  ConstExpr ',' ConstExprList
+| ConstExpr
+;
+
+FieldList    : 
+  IdentDefList ':' Type ';' FieldList
+| IdentDefList ':' Type
+| /* Empty */
+;
+
+StatementSeq : 
+  Statement ';' StatementSeq
+| Statement
+| /* Empty */
+;
+
+Statement    : 
+  Designator ASSIGN Expr 
+| Designator
+| IF Expr THEN StatementSeq ElifList optElse END 
+| CASE Expr OF CaseList optElse END 
+| WHILE Expr DO StatementSeq END 
+| REPEAT StatementSeq UNTIL Expr 
+| FOR ident ASSIGN Expr TO Expr optBY DO StatementSeq END 
+| LOOP StatementSeq END
+| WITH GuardStatList optElse END
+| EXIT 
+| RETURN Expr
+| RETURN
+;
+
+ElifList    :
+  ELSIF Expr THEN StatementSeq ElifList
+| /* Empty */
+;
+
+optElse      :
+  ELSE StatementSeq
+| /* Empty */
+;
+
+optBY        :
+  BY ConstExpr
+| /* Empty */
+;
+CaseList     :
+  Case
+| Case '|' CaseList
+;
+
+Case         : 
+  CaseLabelList ':' StatementSeq
+| /* Empty */
+;
+
+CaseLabelList :
+  CaseLabels
+| CaseLabels ',' CaseLabelList
+;
+
+CaseLabels   : 
+  ConstExpr 
+| ConstExpr DOTDOT ConstExpr
+;
+
+GuardStatList :
+  Guard DO StatementSeq '|' GuardStatList
+| Guard DO StatementSeq 
+;
+
+Guard        : 
+  Qualident ':' Qualident
+;
+
+ConstExpr    : 
+  Expr
+;
+
+Expr         : 
+/* Relations */
+  Expr '=' Expr
+| Expr '#' Expr
+| Expr '<' Expr
+| Expr LTEQ Expr
+| Expr '>' Expr
+| Expr GTEQ Expr
+| Expr IN Expr
+| Expr IS Expr
+/* Unary (prefix) Operators */
+| '+' Expr %prec UPLUS
+| '-' Expr %prec UMINUS
+/* Additive Operators */
+| Expr '+' Expr
+| Expr '-' Expr
+| Expr OR Expr
+/* Multiplicative Operators */
+| Expr '*' Expr
+| Expr '/' Expr
+| Expr DIV Expr
+| Expr MOD Expr
+| Expr '&' Expr
+| Factor
+;
+
+Factor       : 
+  Designator
+| CONSTnumber 
+| CONSTchar 
+| CONSTstring 
+| NIL 
+| Set 
+| '(' Expr ')' 
+| '~' Factor
+;
+
+Set          : 
+  '{' optElementList '}'
+;
+
+optElementList :
+  ElementList
+| /* Empty */
+;
+
+ElementList :
+  Element ',' ElementList
+| Element 
+;
+
+Element      : 
+  Expr 
+| Expr DOTDOT Expr
+;
+
+Designator   : 
+  ident optSuffix
+;
+
+optSuffix :
+  '.' ident  optSuffix
+| '[' optExprList ']'  optSuffix
+| '^'  optSuffix
+| '(' optExprList ')' optSuffix  /* NB - too wide! (avoiding ambiguity) */
+| /* Empty */
+;
+
+optExprList     : 
+  ExprList 
+| /* Empty */
+;
+
+ExprList     : 
+  Expr 
+| Expr ',' ExprList
+;
+
+IdentDefList    : 
+  IdentDef 
+| IdentDef ',' IdentDefList
+;
+
+Qualident    : 
+  ident
+| ident '.' ident
+;
+IdentDef     : 
+  ident 
+| ident '*' 
+| ident '-'
+;
+
+
+%%
+
+int yyerror(char *msg)
+{
+  printf("%s at line %d with [%s]\n",msg,yylineno,yytext);
+}
+
+int main()
+{
+  int res = yyparse();
+  if (res==0)
+    printf("Successful parse\n");
+  else
+    printf("Encountered errors\n");
+  return 0;
+}
+
+
