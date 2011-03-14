@@ -4,8 +4,6 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "oberon.hh"
-    #include "scope.h"
-
 	void parseComment(void);
     extern "C"{
       int yylex(void);

@@ -557,15 +557,13 @@ char *yytext;
 	#include <stdio.h>
 	#include <string.h>
 	#include "oberon.hh"
-    #include "scope.h"
-
 	void parseComment(void);
     extern "C"{
       int yylex(void);
     }
 	extern int yydebug;
 /* DOSEOF      \x1A */
-#line 569 "lex.yy.c"
+#line 567 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -752,10 +750,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 30 "oberon.l"
+#line 28 "oberon.l"
 
 
-#line 759 "lex.yy.c"
+#line 757 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -840,208 +838,208 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 32 "oberon.l"
+#line 30 "oberon.l"
 { parseComment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "oberon.l"
+#line 31 "oberon.l"
 { ; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 34 "oberon.l"
+#line 32 "oberon.l"
 { yylineno++; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 36 "oberon.l"
+#line 34 "oberon.l"
 { return(ASSIGN); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 37 "oberon.l"
+#line 35 "oberon.l"
 { return(LE); } 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 38 "oberon.l"
+#line 36 "oberon.l"
 { return(GE); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 39 "oberon.l"
+#line 37 "oberon.l"
 { return(DOTS); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "oberon.l"
+#line 39 "oberon.l"
 { return(ARRAY); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 42 "oberon.l"
+#line 40 "oberon.l"
 { return(BBEGIN); } // Watch for clash with lex's macro!
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 43 "oberon.l"
+#line 41 "oberon.l"
 { return(BY); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 44 "oberon.l"
+#line 42 "oberon.l"
 { return(CASE); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 45 "oberon.l"
+#line 43 "oberon.l"
 { return(CONST); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 46 "oberon.l"
+#line 44 "oberon.l"
 { return(DIV); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 47 "oberon.l"
+#line 45 "oberon.l"
 { return(DO); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 48 "oberon.l"
+#line 46 "oberon.l"
 { return(ELSE); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 49 "oberon.l"
+#line 47 "oberon.l"
 { return(ELSIF); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 50 "oberon.l"
+#line 48 "oberon.l"
 { return(END); }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 51 "oberon.l"
+#line 49 "oberon.l"
 { return(EXIT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 52 "oberon.l"
+#line 50 "oberon.l"
 { return(FOR); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 53 "oberon.l"
+#line 51 "oberon.l"
 { return(IF); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 54 "oberon.l"
+#line 52 "oberon.l"
 { return(IMPORT); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 55 "oberon.l"
+#line 53 "oberon.l"
 { return(IN); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 56 "oberon.l"
+#line 54 "oberon.l"
 { return(IS); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 57 "oberon.l"
+#line 55 "oberon.l"
 { return(LOOP); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 58 "oberon.l"
+#line 56 "oberon.l"
 { return(MOD); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 59 "oberon.l"
+#line 57 "oberon.l"
 { return(MODULE); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 60 "oberon.l"
+#line 58 "oberon.l"
 { return(NIL); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 61 "oberon.l"
+#line 59 "oberon.l"
 { return(OF); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 62 "oberon.l"
+#line 60 "oberon.l"
 { return(OR); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 63 "oberon.l"
+#line 61 "oberon.l"
 { return(POINTER); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 64 "oberon.l"
+#line 62 "oberon.l"
 { return(PROCEDURE); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 65 "oberon.l"
+#line 63 "oberon.l"
 { return(RECORD); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 66 "oberon.l"
+#line 64 "oberon.l"
 { return(REPEAT); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 67 "oberon.l"
+#line 65 "oberon.l"
 { return(RETURN); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 68 "oberon.l"
+#line 66 "oberon.l"
 { return(THEN); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 69 "oberon.l"
+#line 67 "oberon.l"
 { return(TO); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 70 "oberon.l"
+#line 68 "oberon.l"
 { return(TYPE); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 71 "oberon.l"
+#line 69 "oberon.l"
 { return(UNTIL); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 72 "oberon.l"
+#line 70 "oberon.l"
 { return(VAR); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 73 "oberon.l"
+#line 71 "oberon.l"
 { return(WHILE); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 74 "oberon.l"
+#line 72 "oberon.l"
 { return(WITH); }
 	YY_BREAK
 case 42:
@@ -1049,48 +1047,48 @@ case 42:
 (yy_c_buf_p) = yy_cp -= 2;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 76 "oberon.l"
+#line 74 "oberon.l"
 { return(CONSTnum); }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 77 "oberon.l"
+#line 75 "oberon.l"
 { return(CONSTnum); }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 78 "oberon.l"
+#line 76 "oberon.l"
 { return(CONSTnum); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 80 "oberon.l"
+#line 78 "oberon.l"
 { return(CONSTchar); }
 	YY_BREAK
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
-#line 81 "oberon.l"
+#line 79 "oberon.l"
 { return(CONSTstring); }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 83 "oberon.l"
+#line 81 "oberon.l"
 { yylval.str=(char *)malloc(1);
               strcpy(yylval.str,yytext); 
               return(ident); }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 86 "oberon.l"
+#line 84 "oberon.l"
 { return yytext[0]; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 88 "oberon.l"
+#line 86 "oberon.l"
 ECHO;
 	YY_BREAK
-#line 1094 "lex.yy.c"
+#line 1092 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2088,7 +2086,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 88 "oberon.l"
+#line 86 "oberon.l"
 
 
 
