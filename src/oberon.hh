@@ -93,7 +93,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 32 "oberon.y"
+#line 36 "oberon.y"
 
   char * str;
   TypeSpecifier * typ;

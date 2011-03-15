@@ -11,7 +11,7 @@
 
 struct Entry{
   TypeSpecifier * type;
-  int value;
+  void * value;
 };
 
 typedef std::tr1::unordered_map<std::string, Entry *> SymbolTable;
@@ -46,7 +46,8 @@ int Scope::declare(std::string id, TypeSpecifier *t){
 int Scope::insertType(std::string id, TypeSpecifier *t){
   if(table.find(id)==table.end()){
     Entry *entry= new Entry();
-    entry->type=t;
+    entry->type=new TypeSpecifier();
+    entry->value=(void *)t;
     table.insert(make_pair(id,entry));
     return 1;
   }
@@ -68,7 +69,7 @@ void Scope::showAll(){
   printf("Showing contents of Symbol Table\n");
   int i=0;
   for(it=table.begin(); it!=table.end(); it++){
-    printf("%d - %s\n", ++i, it->first.c_str());
+    printf("%d - %s %d\n", ++i, it->first.c_str(), (int) (it->second));
   }
 }
 #endif

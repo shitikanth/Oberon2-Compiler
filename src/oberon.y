@@ -5,6 +5,8 @@
 #include <string>
 #include <cstring>
 #include <queue>
+#include <utility>
+#include <algorithm>
 #include "scope.h"
 using namespace std;
 //Lex stuff{{{
@@ -27,6 +29,8 @@ int yyerror(const char *msg){
 Scope *env;
 Entry *entry;
 queue<char *> identList;
+queue< pair<queue<char *>, TypeSpecifier *> >fieldList;
+int fieldSize=0;
 %}
 
 %union{
@@ -134,7 +138,8 @@ TypeList :
 
 VarList  : 
   IdentDefList 
-  ':' Type ';'      { char *st;
+  ':' Type ';'      { 
+                      char *st;
                       while(!identList.empty()){
                         st=identList.front();
                         printf("Create symbol table entry for %s\n",st);
@@ -197,20 +202,69 @@ Receiver:
 
 Type: 
   Qualident              
-                        {
-
-                          $$=NULL;
+                        { 
+                          Entry * smt; 
+                          $$ = NULL;
+                          smt = env->lookup(string($1)); 
+                          if(smt==NULL){
+                            fprintf(stderr,"error: %s not declared.\n",$1);
+                          }
+                          else if(smt->type->node==-1){
+                            $$ = (TypeSpecifier *) (smt->value);
+                          }
+                          else{
+                            fprintf(stderr,"%s is not a declared Type.\n",$1);
+                          }
                         }
 | ARRAY ConstExprList OF Type 
-                        {$$=NULL;}
+                        {
+                          $$ = new TypeSpecifier();
+                          $$->node = tARRAY;
+                          $$->n = 1;
+                          $$->child = new TypeSpecifier *[1];
+                          $$->child[0] = $4;
+                        }
 | ARRAY               OF Type 
-                        {$$=NULL;}
+                        {
+                          $$ = new TypeSpecifier();
+                          $$->node = tARRAY;
+                          $$->n = 1;
+                          $$->child = new TypeSpecifier *[1];
+                          $$->child[0] = $3;
+                        }
 | RECORD '('Qualident')' FieldList END
-                        {$$=NULL;}
+                        {
+                          //Neglect for now
+                          $$=NULL;
+                        }
 | RECORD                 FieldList END
-                        {$$=NULL;}
+                        {
+                          $$= new TypeSpecifier();
+                          $$->node = tRECORD;
+                          $$->n=fieldSize;
+                          fieldSize=0;
+                          $$->child = new TypeSpecifier *[$$->n];
+                          $$->fields = new string [$$->n];
+                          int count=0;
+                          while(!fieldList.empty()){
+                            queue<char *> tmp = fieldList.front().first;
+                            while(!tmp.empty()){
+                              $$->fields[count]=tmp.front();
+                              tmp.pop();
+                              $$->child[count++]=fieldList.front().second;
+                            }
+                            fieldList.pop();
+                          } 
+                          fieldSize=0;
+                        }
 | POINTER TO Type
-                        {$$=NULL;}
+                        {
+                          $$ = new TypeSpecifier();
+                          $$->node = tPOINTER;
+                          $$->n = 1;
+                          $$->child = new TypeSpecifier *[1];
+                          $$->child[0] = $3;
+                        }
 | PROCEDURE FormalPars
                         {$$=NULL;}
 ;
@@ -219,10 +273,19 @@ ConstExprList :
   ConstExpr ',' ConstExprList
 | ConstExpr
 ;
-
 FieldList    : 
-  IdentDefList ':' Type ';' FieldList
+  IdentDefList ':' Type ';'
+                        {
+                          fieldList.push(make_pair(identList,$3));
+                          fieldSize+=identList.size();
+                        }
+  FieldList  {//HAHA
+             }
 | IdentDefList ':' Type
+                        {
+                          fieldList.push(make_pair(identList,$3));
+                          fieldSize+=identList.size();
+                        }
 |
 ;
 
@@ -374,7 +437,7 @@ IdentDefList    :
 ;
 
 Qualident    : 
-  ident         { $$ = $1; }
+  ident         { strcpy($$,$1); }
 | ident '.' ident 
                 { 
                   strcpy($$,$1);
@@ -398,6 +461,8 @@ void createBasicTypes(){
   for(int i=0; i<8; i++){
     env->insertType(temp[i],new TypeSpecifier(i));
   }
+  printf("Checks\n");
+  printf("finding INT: %d\n",(int)(env->lookup(string("INT"))));
 }
 int main(int argc, char* argv[]){
   FILE * out;

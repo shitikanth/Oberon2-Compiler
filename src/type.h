@@ -30,8 +30,9 @@ class TypeSpecifier{
   public:
     int node; // Contains the type constructor if it is a derived type or the basic type.
     int n;    // Number of children (from which the type is derived)
-    // if 
-    TypeSpecifier *child;
+    // if node = -1, type is "TYPE"
+    // then the the TypeSpecifier represents the TYPE value
+    TypeSpecifier **child;
     std::string *fields; //optional (used for records)
     int width;
     TypeSpecifier(int nd=-1){

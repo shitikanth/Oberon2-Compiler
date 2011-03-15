@@ -7,10 +7,13 @@ IMPORT In, Out;
 
 CONST MAX = 10;
 
+TYPE
+  z = INT;
+  y = z;
+
 VAR 
-  k, N, x, total: INTEGER;
-  x: INTEGER;
-  pints: ARRAY MAX OF INTEGER;
+  k, N, x, total: INT;
+  pints: ARRAY MAX OF INT;
 
 BEGIN
   (* Read in the numbers *)
