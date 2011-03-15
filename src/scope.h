@@ -1,4 +1,6 @@
 
+#ifndef SCOPEOBERON
+#define SCOPEOBERON
 #include <tr1/unordered_map>
 #include <string>
 #include <algorithm>
@@ -6,12 +8,10 @@
 #include "type.h"
 #include <cstdio>
 
-#ifndef SCOPEOBERON
-#define SCOPEOBERON
 
 struct Entry{
   TypeSpecifier * type;
-  void * value;
+  int value;
 };
 
 typedef std::tr1::unordered_map<std::string, Entry *> SymbolTable;
@@ -26,22 +26,32 @@ class Scope{
   public:
     Scope(Scope *p=NULL){
       prev=p;
+      table=SymbolTable();
     }
-    void declare(std::string, TypeSpecifier *);
+    int declare(std::string, TypeSpecifier *);
+    int insertType(std::string, TypeSpecifier *);
     Entry * lookup(std::string);
     void showAll();
 };
 
-void Scope::declare(std::string id, TypeSpecifier *t){
+int Scope::declare(std::string id, TypeSpecifier *t){
   if(table.find(id)==table.end()){
-    //Raise exception
-    ;
+    Entry *entry= new Entry();
+    entry->type=t;
+    table.insert(make_pair(id,entry));
+    return 1;
   }
-  Entry *entry= new Entry();
-  entry->type=t;
-  table.insert(make_pair(id,entry));
+  return 0;
 }
-
+int Scope::insertType(std::string id, TypeSpecifier *t){
+  if(table.find(id)==table.end()){
+    Entry *entry= new Entry();
+    entry->type=t;
+    table.insert(make_pair(id,entry));
+    return 1;
+  }
+  return 0;
+}
 Entry * Scope::lookup(std::string id){ 
   TableIterator it;
   it=table.find(id);

@@ -1,0 +1,4 @@
+* implement type evaluation for expressions & type-expressions
+* type-checking
+* implicit type conversion
+* auxiliary table for types

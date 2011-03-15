@@ -1,8 +1,9 @@
 %{ 
-    #include "type.h"
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include <string.h>
+    #include "type.h"
+    #include "ast.h"
 	#include "oberon.hh"
 	void parseComment(void);
     extern "C"{

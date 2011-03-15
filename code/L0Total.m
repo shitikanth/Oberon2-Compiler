@@ -9,6 +9,7 @@ CONST MAX = 10;
 
 VAR 
   k, N, x, total: INTEGER;
+  x: INTEGER;
   pints: ARRAY MAX OF INTEGER;
 
 BEGIN

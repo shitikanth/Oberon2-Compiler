@@ -93,15 +93,16 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 27 "oberon.y"
+#line 32 "oberon.y"
 
   char * str;
   TypeSpecifier * typ;
+  Ast * syn;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 105 "oberon.hh"
+#line 106 "oberon.hh"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

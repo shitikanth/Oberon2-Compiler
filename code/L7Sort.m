@@ -10,7 +10,7 @@ CONST MAX = 3;			(* Max no. of lines *)
    that are dynamically allocated, so as to avoid a compromise
    between storage economy and maximum length of line. *)
 
- line = POINTER TO ARRAY OF CHAR;
+TYPE line = POINTER TO ARRAY OF CHAR;
 
 VAR 
   nlines: INTEGER;

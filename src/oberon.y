@@ -1,8 +1,10 @@
 %{
 #include "type.h"
-#include<stdio.h>
-#include<string>
-#include<queue>
+#include "ast.h"
+#include <stdio.h>
+#include <string>
+#include <cstring>
+#include <queue>
 #include "scope.h"
 using namespace std;
 //Lex stuff{{{
@@ -17,16 +19,20 @@ int yyerror(char *msg)
 {
   printf("%s at line %d with [%s]\n",msg,yylineno,yytext);
 }
+int yyerror(const char *msg){
+  yyerror((char *) msg);
+}
 //}}}
 
 Scope *env;
+Entry *entry;
 queue<char *> identList;
-
 %}
 
 %union{
   char * str;
   TypeSpecifier * typ;
+  Ast * syn;
 }
 
 %token ARRAY     
@@ -71,7 +77,7 @@ queue<char *> identList;
 %left '*'  '/'  DIV  MOD  '&'
 %nonassoc UPLUS UMINUS
 
-%type <str> IdentDef
+%type <str> IdentDef Qualident
 %type <typ> Type
 %%
 
@@ -116,7 +122,13 @@ ConstList :
 ;
 
 TypeList : 
-  IdentDef '=' Type ';' TypeList
+  IdentDef '=' Type ';'
+                    {
+                      printf("Add type %s\n",$1);
+                      if(!env->insertType(string($1),$3))
+                        fprintf(stderr,"error: Redeclaration of %s\n",$1);
+                    }
+  TypeList
 |
 ;
 
@@ -126,6 +138,8 @@ VarList  :
                       while(!identList.empty()){
                         st=identList.front();
                         printf("Create symbol table entry for %s\n",st);
+                        if(!env->declare(string(st),$3))
+                          fprintf(stderr,"error: Redeclaration of %s\n",st);
                         identList.pop();
                         free(st);
                       }
@@ -182,7 +196,11 @@ Receiver:
 ;
 
 Type: 
-  Qualident             {$$=NULL}
+  Qualident              
+                        {
+
+                          $$=NULL;
+                        }
 | ARRAY ConstExprList OF Type 
                         {$$=NULL;}
 | ARRAY               OF Type 
@@ -356,8 +374,14 @@ IdentDefList    :
 ;
 
 Qualident    : 
-  ident         
-| ident '.' ident
+  ident         { $$ = $1; }
+| ident '.' ident 
+                { 
+                  strcpy($$,$1);
+                  strcat($$,".");
+                  strcat($$,$3);
+                }
+
 ;
 
 IdentDef     : 
@@ -369,9 +393,20 @@ IdentDef     :
 
 %%
 
-int main()
-{
+void createBasicTypes(){
+  string temp[]={"BOOLEAN","CHAR","SHORTINT","INT","LONGINT","REAL","LONGREAL","SET"};
+  for(int i=0; i<8; i++){
+    env->insertType(temp[i],new TypeSpecifier(i));
+  }
+}
+int main(int argc, char* argv[]){
+  FILE * out;
+  char *name=(char *)"out.asm";
+  if(argc>1)
+    name=argv[1];
+  out=fopen(name,"w");
   env = new Scope();
+  createBasicTypes();
   int res = yyparse();
   env->showAll();
   if (res==0)
