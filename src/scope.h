@@ -32,6 +32,7 @@ class Scope{
     int insertType(std::string, TypeSpecifier *);
     Entry * lookup(std::string);
     void showAll();
+    void deleteStuff();
 };
 
 int Scope::declare(std::string id, TypeSpecifier *t){
@@ -69,7 +70,17 @@ void Scope::showAll(){
   printf("Showing contents of Symbol Table\n");
   int i=0;
   for(it=table.begin(); it!=table.end(); it++){
-    printf("%d - %s %d\n", ++i, it->first.c_str(), (int) (it->second));
+    printf("%d - %s %d %d\n", ++i, it->first.c_str(), (int) (it->second->type),(int) (it->second->value));
   }
 }
+
+void Scope::deleteStuff(){
+  TableIterator it;
+  printf("Deleting contents of Symbol Table\n");
+  int i=0;
+  for(it=table.begin(); it!=table.end(); it++){
+    delete it->second->type;
+  }
+}
+
 #endif

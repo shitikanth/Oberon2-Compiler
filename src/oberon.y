@@ -464,6 +464,7 @@ void createBasicTypes(){
   printf("Checks\n");
   printf("finding INT: %d\n",(int)(env->lookup(string("INT"))));
 }
+
 int main(int argc, char* argv[]){
   FILE * out;
   char *name=(char *)"out.asm";
@@ -474,6 +475,9 @@ int main(int argc, char* argv[]){
   createBasicTypes();
   int res = yyparse();
   env->showAll();
+  //env->deleteStuff();
+  printf("is equivalent? %d\n",CheckEquivalence(env->lookup("INT")->value,env->lookup("y")->value));
+  delete env;
   if (res==0)
     printf("Successful parse\n");
   else

@@ -7,13 +7,13 @@ IMPORT In, Out;
 
 CONST MAX = 10;
 
-TYPE
-  z = INT;
-  y = z;
-
 VAR 
   k, N, x, total: INT;
   pints: ARRAY MAX OF INT;
+
+TYPE
+  y = INT;
+  z = y;
 
 BEGIN
   (* Read in the numbers *)

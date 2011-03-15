@@ -41,8 +41,14 @@ class TypeSpecifier{
       fields=NULL;
       node=nd;
     }
+    ~TypeSpecifier(){
+      for(int i=0; i<n; i++)
+        delete child[i];
+       delete fields;
+    }
 };
 
 bool CheckEquivalence(TypeSpecifier * type1, TypeSpecifier * type2);
+bool CheckEquivalence(void * type1, void * type2);
 #endif
 
