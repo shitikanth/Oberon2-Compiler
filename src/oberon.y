@@ -126,7 +126,7 @@ DataList:
 
 ConstList :
   IdentDef '=' ConstExpr ';' ConstList
-                    { ; //during intermediate code generation
+                    { ; //TODO next   
                     }
 
 | 
@@ -166,7 +166,7 @@ ProcList     :
   ProcDecl ';' ProcList
 | ForwardDecl ';' ProcList
                     {
-                      ;//To be implemented if time permits
+                      ;//MAYBE
                     }
 |
 ;
@@ -431,7 +431,8 @@ Case:
 
 CaseLabelList:
   CaseLabels
-| CaseLabels ',' CaseLabelList
+| ConstExpr DOTS ConstExpr
+| Guard DO StatementSeq 
 ;
 
 CaseLabels: 
@@ -443,7 +444,6 @@ GuardStatList :
   Guard DO StatementSeq '|' GuardStatList
 | Guard DO StatementSeq 
 ;
-
 Guard        : 
   Qualident ':' Qualident
 ;
@@ -485,7 +485,7 @@ Factor       :
 | CONSTstring { $$ = new TypeSpecifier();
 		$$->node = 11;
 		$$->n = 1;
-        // TODO INCLUDE REAL INT SHORTINT LONGINT
+        // TODO INLCUDE REAL INT SHORTINT LONGINT
 		}
 | NIL 
 | Set 

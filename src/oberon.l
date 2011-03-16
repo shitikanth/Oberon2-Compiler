@@ -38,7 +38,7 @@ STRING      ['][^']*[']|["][^"]*["]
 ".."      	{ return(DOTS); }
 
 "ARRAY"		{ return(ARRAY); }
-"BEGIN"		{ return(BBEGIN); } // Watch for clash with lex's macro!
+"BEGIN"		{ return(BBEGIN); } /* Watch for clash with lex's macro! */
 "BY"		{ return(BY); }
 "CASE"		{ return(CASE); }
 "CONST"		{ return(CONST); }

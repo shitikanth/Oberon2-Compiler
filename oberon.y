@@ -221,15 +221,6 @@ CaseLabelList:
 | CaseLabels ',' CaseLabelList
 ;
 
-CaseLabels: 
-  ConstExpr 
-| ConstExpr DOTS ConstExpr
-;
-
-GuardStatList :
-  Guard DO StatementSeq '|' GuardStatList
-| Guard DO StatementSeq 
-;
 
 Guard        : 
   Qualident ':' Qualident

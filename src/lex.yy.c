@@ -881,7 +881,7 @@ YY_RULE_SETUP
 case 9:
 YY_RULE_SETUP
 #line 41 "oberon.l"
-{ return(BBEGIN); } // Watch for clash with lex's macro!
+{ return(BBEGIN); } /* Watch for clash with lex's macro! */
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
