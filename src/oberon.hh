@@ -80,9 +80,10 @@
      CONSTchar = 296,
      CONSTstring = 297,
      CONSTnum = 298,
-     ident = 299,
-     UMINUS = 300,
-     UPLUS = 301
+     CONSTreal = 299,
+     ident = 300,
+     UMINUS = 301,
+     UPLUS = 302
    };
 #endif
 
@@ -102,7 +103,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 106 "oberon.hh"
+#line 107 "oberon.hh"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

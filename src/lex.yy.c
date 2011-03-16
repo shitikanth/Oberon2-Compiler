@@ -1059,7 +1059,7 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 77 "oberon.l"
-{ return(CONSTnum); }
+{ return(CONSTreal); }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP

@@ -32,7 +32,7 @@ Entry *entry;
 queue<char *> identList;
 queue<pair<string, TypeSpecifier *> > params;
 queue< pair<queue<char *>, TypeSpecifier *> >fieldList;
-TypeSpecifier * void_;
+TypeSpecifier * basicType[9];
 
 int fieldSize=0;
 %}
@@ -78,7 +78,7 @@ int fieldSize=0;
 %token IF        
 %token REPEAT
 %token ASSIGN LE GE DOTS 
-%token CONSTchar CONSTstring CONSTnum 
+%token CONSTchar CONSTstring CONSTnum CONSTreal
 %token <str> ident
 %nonassoc '='  '#'  '<'  LE  '>'  GE  IN  IS
 %left '+'  '-'  OR
@@ -230,11 +230,11 @@ FormalPars:
 
 | '(' FPsectionList ')'
                         {
-                          params.push(make_pair("",void_));
+                          params.push(make_pair("",basicType[8]));
                         }
 |  '(' ')'
                         {
-                          params.push(make_pair("",void_));
+                          params.push(make_pair("",basicType[8]));
                         }
 |
 ;
@@ -431,8 +431,7 @@ Case:
 
 CaseLabelList:
   CaseLabels
-| ConstExpr DOTS ConstExpr
-| Guard DO StatementSeq 
+| CaseLabels ',' CaseLabelList
 ;
 
 CaseLabels: 
@@ -444,6 +443,7 @@ GuardStatList :
   Guard DO StatementSeq '|' GuardStatList
 | Guard DO StatementSeq 
 ;
+
 Guard        : 
   Qualident ':' Qualident
 ;
@@ -481,7 +481,8 @@ Expr         :
 Factor       : 
   Designator {  }
 | CONSTnum 
-| CONSTchar { $$ = new TypeSpecifier(tCHAR);}
+| CONSTreal
+| CONSTchar { $$ = basicType[tCHAR];}
 | CONSTstring { $$ = new TypeSpecifier();
 		$$->node = 11;
 		$$->n = 1;
@@ -565,8 +566,8 @@ void createBasicTypes(){
   for(int i=0; i<9; i++){
     t=new TypeSpecifier(i);
     env->insertType(temp[i],t);
+    basicType[i]=t;
   }
-  void_=t;
   printf("Checks\n");
   printf("finding INT: %d\n",(int)(env->lookup(string("INTEGER"))));
 }

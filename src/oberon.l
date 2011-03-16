@@ -74,7 +74,7 @@ STRING      ['][^']*[']|["][^"]*["]
 
 {digit}+/".."   { return(CONSTnum); }
 {INTEGER}		{ return(CONSTnum); }
-{REAL}			{ return(CONSTnum); }
+{REAL}			{ return(CONSTreal); }
 
 {CHAR}		{ return(CONSTchar); }
 {STRING}	{ return(CONSTstring); }
