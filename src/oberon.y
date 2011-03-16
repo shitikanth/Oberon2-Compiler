@@ -28,8 +28,12 @@ int yyerror(const char *msg){
 
 Scope *env;
 Entry *entry;
+
 queue<char *> identList;
+queue<pair<string, TypeSpecifier *> > params;
 queue< pair<queue<char *>, TypeSpecifier *> >fieldList;
+TypeSpecifier * void_;
+
 int fieldSize=0;
 %}
 
@@ -82,7 +86,7 @@ int fieldSize=0;
 %nonassoc UPLUS UMINUS
 
 %type <str> IdentDef Qualident
-%type <typ> Type
+%type <typ> Type  Expr Factor 
 %%
 
 Module: 
@@ -122,6 +126,9 @@ DataList:
 
 ConstList :
   IdentDef '=' ConstExpr ';' ConstList
+                    { ; //during intermediate code generation
+                    }
+
 | 
 ;
 
@@ -129,6 +136,7 @@ TypeList :
   IdentDef '=' Type ';'
                     {
                       printf("Add type %s\n",$1);
+                      $3->print();
                       if(!env->insertType(string($1),$3))
                         fprintf(stderr,"error: Redeclaration of %s\n",$1);
                     }
@@ -157,14 +165,49 @@ VarList  :
 ProcList     :
   ProcDecl ';' ProcList
 | ForwardDecl ';' ProcList
+                    {
+                      ;//To be implemented if time permits
+                    }
 |
 ;
 
 
 ProcDecl     : 
-  PROCEDURE Receiver IdentDef FormalPars ';' 
-            DeclSeq StatBlock
-  END ident
+  PROCEDURE         
+  Receiver IdentDef          
+  FormalPars ';'    
+                    { 
+                       Entry * e = env->lookup($3);
+                       if(e!=NULL)
+                         fprintf(stderr,"error %d: %s is declared already.\n",yylineno, $3);
+                       else{
+                         TypeSpecifier * t;
+                         t=new TypeSpecifier(tPROCEDURE);
+                         t->n=params.size();
+                         t->child=new TypeSpecifier *[t->n];
+                         int i=1;
+                         env = new Scope(env);
+                         while(i<t->n){
+                           t->child[i++]=params.front().second;
+                           env->declare(params.front().first,params.front().second);
+                           params.pop();
+                         }
+                         t->child[0]=params.front().second;
+                         params.pop();
+                         env->getPrev()->declare(string($3),t);
+                       }
+                    }
+  DeclSeq StatBlock
+  END ident         
+                    { 
+                      if(strcmp($3,$10)!=0)
+                        printf("error %d: Expected %s after END: found %s\n",yylineno,$3,$10);
+                      Scope * prev = env->getPrev();
+                      printf("%s\n",$3);
+                      env->showAll();
+                      delete env;
+                      env = prev;
+                    }
 ;
 
 ForwardDecl :
@@ -173,9 +216,26 @@ ForwardDecl :
 
 
 FormalPars: 
-  '(' FPsectionList ')' ':' Qualident
-| '(' FPsectionList ')' 
+  '(' FPsectionList ')' ':' Qualident 
+                        {
+                          Entry * e=env->lookup($5);
+                          if(e==NULL)
+                            fprintf(stderr,"error: %s is not declared.\n",$5);
+                          else if(e->type->node!=-1)
+                            fprintf(stderr,"error: %s is not a type.\n",$5);
+                          else{
+                           params.push(make_pair("",(TypeSpecifier *)e->type->child[0]));
+                          }
+                        }
+
+| '(' FPsectionList ')'
+                        {
+                          params.push(make_pair("",void_));
+                        }
 |  '(' ')'
+                        {
+                          params.push(make_pair("",void_));
+                        }
 |
 ;
 
@@ -185,17 +245,39 @@ FPsectionList:
 ;
 
 FPsection:
-  IdentList ':' Type 
+  IdentList ':' Type
+                        {
+                          string s;
+                          while(!identList.empty()){
+                            s=identList.front();
+                            identList.pop();
+                            params.push(make_pair(s,$3));
+                          } 
+                        }
+
 | VAR IdentList ':' Type
+                        { 
+                          string s;
+                          while(!identList.empty()){
+                            s=identList.front();
+                            identList.pop();
+                            params.push(make_pair(s,$4));
+                          } 
+                        }
 ;
 
 IdentList:
-  IdentList ',' ident
-| ident
+  ident ','             {
+                          identList.push($1);
+                        }
+  IdentList
+| ident                 {
+                          identList.push($1);
+                        }
 ;
 
-Receiver: 
-  '(' ident ':' ident ')'
+Receiver: 			/* Ignore for now */
+  '(' ident ':' ident ')' 
 | '(' VAR ident ':' ident ')'
 | 
 ;
@@ -210,14 +292,14 @@ Type:
                             fprintf(stderr,"error: %s not declared.\n",$1);
                           }
                           else if(smt->type->node==-1){
-                            $$ = (TypeSpecifier *) (smt->value);
+                            $$ = (TypeSpecifier *) (smt->type->child[0]);
                           }
                           else{
                             fprintf(stderr,"%s is not a declared Type.\n",$1);
                           }
                         }
 | ARRAY ConstExprList OF Type 
-                        {
+                        {  //TODO NEXT
                           $$ = new TypeSpecifier();
                           $$->node = tARRAY;
                           $$->n = 1;
@@ -225,7 +307,7 @@ Type:
                           $$->child[0] = $4;
                         }
 | ARRAY               OF Type 
-                        {
+                        { //TODO NEXT
                           $$ = new TypeSpecifier();
                           $$->node = tARRAY;
                           $$->n = 1;
@@ -239,6 +321,7 @@ Type:
                         }
 | RECORD                 FieldList END
                         {
+                          // TODO NEXT SCOPE
                           $$= new TypeSpecifier();
                           $$->node = tRECORD;
                           $$->n=fieldSize;
@@ -255,18 +338,27 @@ Type:
                             }
                             fieldList.pop();
                           } 
-                          fieldSize=0;
                         }
 | POINTER TO Type
                         {
-                          $$ = new TypeSpecifier();
-                          $$->node = tPOINTER;
+                          $$ = new TypeSpecifier(tPOINTER);
                           $$->n = 1;
                           $$->child = new TypeSpecifier *[1];
                           $$->child[0] = $3;
                         }
 | PROCEDURE FormalPars
-                        {$$=NULL;}
+                        {
+                          $$=new TypeSpecifier(tPROCEDURE);
+                          $$->n=params.size();
+                          $$->child=new TypeSpecifier *[$$->n];
+                          int i=1;
+                          while(i<$$->n){
+                            $$->child[i++]=params.front().second;
+                            params.pop();
+                          }
+                          $$->child[0]=params.front().second;
+                          params.pop();
+                        }
 ;
 
 ConstExprList :
@@ -278,6 +370,8 @@ FieldList    :
                         {
                           fieldList.push(make_pair(identList,$3));
                           fieldSize+=identList.size();
+                          queue<char *> tmp = identList;
+                          identList=queue<char *>();
                         }
   FieldList  {//HAHA
              }
@@ -285,6 +379,7 @@ FieldList    :
                         {
                           fieldList.push(make_pair(identList,$3));
                           fieldSize+=identList.size();
+                          identList=queue<char *>();
                         }
 |
 ;
@@ -295,7 +390,8 @@ StatementSeq :
 ;
 
 Statement    : 
-  Designator ASSIGN Expr 
+  Designator ASSIGN Expr { //TODO NEXT HANDLE TYPE
+                         }
 | Designator /* Note that we have made some changes from the original Oberon-2 grammar 
             to make it unambiguous and to allow designator expressions to include return values from 
             functions with more than one parameters. */
@@ -359,7 +455,10 @@ ConstExpr    :
 Expr         : 
 /* Relations */
   Expr '=' Expr
-| Expr '#' Expr
+| Expr '#' Expr {;
+                //TODO
+                //Type checking, type expansion, return type
+                }
 | Expr '<' Expr
 | Expr LE Expr
 | Expr '>' Expr
@@ -380,10 +479,14 @@ Expr         :
 ;
 
 Factor       : 
-  Designator
+  Designator {  }
 | CONSTnum 
-| CONSTchar 
-| CONSTstring 
+| CONSTchar { $$ = new TypeSpecifier(tCHAR);}
+| CONSTstring { $$ = new TypeSpecifier();
+		$$->node = 11;
+		$$->n = 1;
+        // TODO INCLUDE REAL INT SHORTINT LONGINT
+		}
 | NIL 
 | Set 
 | '(' Expr ')' 
@@ -457,12 +560,15 @@ IdentDef     :
 %%
 
 void createBasicTypes(){
-  string temp[]={"BOOLEAN","CHAR","SHORTINT","INT","LONGINT","REAL","LONGREAL","SET"};
-  for(int i=0; i<8; i++){
-    env->insertType(temp[i],new TypeSpecifier(i));
+  string temp[]={"BOOLEAN","CHAR","SHORTINT","INTEGER","LONGINT","REAL","LONGREAL","SET","VOID"};
+  TypeSpecifier * t;
+  for(int i=0; i<9; i++){
+    t=new TypeSpecifier(i);
+    env->insertType(temp[i],t);
   }
+  void_=t;
   printf("Checks\n");
-  printf("finding INT: %d\n",(int)(env->lookup(string("INT"))));
+  printf("finding INT: %d\n",(int)(env->lookup(string("INTEGER"))));
 }
 
 int main(int argc, char* argv[]){
@@ -476,7 +582,6 @@ int main(int argc, char* argv[]){
   int res = yyparse();
   env->showAll();
   //env->deleteStuff();
-  printf("is equivalent? %d\n",CheckEquivalence(env->lookup("INT")->value,env->lookup("y")->value));
   delete env;
   if (res==0)
     printf("Successful parse\n");

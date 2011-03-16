@@ -7,14 +7,12 @@ IMPORT In, Out;
 
 CONST MAX = 10;
 
-VAR 
-  k, N, x, total: INT;
-  pints: ARRAY MAX OF INT;
-
 TYPE
   y = INT;
   z = y;
-
+  rc = RECORD a, b, c: INT; d: POINTER TO ARRAY OF INT; END;
+  rc1 = RECORD a, b, c: INT; d: POINTER TO ARRAY OF INT; END;
+  fn = PROCEDURE ( a, b: INT; c, d: POINTER TO ARRAY OF INT ) : rc;
 BEGIN
   (* Read in the numbers *)
   N := 0;

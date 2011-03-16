@@ -11,7 +11,10 @@
 
 struct Entry{
   TypeSpecifier * type;
-  void * value;
+  int offset;
+  int hops;
+  int label;
+  bool used;		// If a variable is unused, give a warning during compile time.
 };
 
 typedef std::tr1::unordered_map<std::string, Entry *> SymbolTable;
@@ -31,6 +34,10 @@ class Scope{
     int declare(std::string, TypeSpecifier *);
     int insertType(std::string, TypeSpecifier *);
     Entry * lookup(std::string);
+    Scope * getPrev(){
+      return prev;
+    }
+    
     void showAll();
     void deleteStuff();
 };
@@ -44,16 +51,20 @@ int Scope::declare(std::string id, TypeSpecifier *t){
   }
   return 0;
 }
+
 int Scope::insertType(std::string id, TypeSpecifier *t){
   if(table.find(id)==table.end()){
     Entry *entry= new Entry();
     entry->type=new TypeSpecifier();
-    entry->value=(void *)t;
+    entry->type->n=1;
+    entry->type->child= new TypeSpecifier *[1];
+    entry->type->child[0] = t;
     table.insert(make_pair(id,entry));
     return 1;
   }
   return 0;
 }
+
 Entry * Scope::lookup(std::string id){ 
   TableIterator it;
   it=table.find(id);
@@ -70,7 +81,7 @@ void Scope::showAll(){
   printf("Showing contents of Symbol Table\n");
   int i=0;
   for(it=table.begin(); it!=table.end(); it++){
-    printf("%d - %s %d %d\n", ++i, it->first.c_str(), (int) (it->second->type),(int) (it->second->value));
+    printf("%d - %s %d\n", ++i, it->first.c_str(), (int) (it->second->type));
   }
 }
 

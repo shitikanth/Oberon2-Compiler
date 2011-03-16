@@ -18,4 +18,4 @@ BEGIN
     N:=25;
     x:=IntSqrt(N);
     Out.Int(x,0); Out.Ln;
-END Sqrt.
+END Sqrtm.

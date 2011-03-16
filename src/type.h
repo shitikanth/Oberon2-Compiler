@@ -19,13 +19,15 @@
 #define tREAL        5
 #define tLONGREAL    6
 #define tSET         7
+#define tVOID        8
 //DERIVED TYPES
-#define tARRAY       8
-#define tRECORD      9
-#define tPOINTER     10
-#define tPROCEDURE   11
+#define tARRAY       9
+#define tRECORD      10
+#define tPOINTER     11
+#define tPROCEDURE   12
 
 #include <string>
+
 class TypeSpecifier{
   public:
     int node; // Contains the type constructor if it is a derived type or the basic type.
@@ -40,12 +42,14 @@ class TypeSpecifier{
       child=NULL;
       fields=NULL;
       node=nd;
+      width=0;
     }
     ~TypeSpecifier(){
       for(int i=0; i<n; i++)
         delete child[i];
        delete fields;
     }
+    void print();
 };
 
 bool CheckEquivalence(TypeSpecifier * type1, TypeSpecifier * type2);

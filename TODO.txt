@@ -1,5 +1,7 @@
 * implement type evaluation for expressions & type-expressions
 * width of types
+* ARRAY
+* type-expansion
 * type-checking
 * implicit type conversion
 * auxiliary table for types
