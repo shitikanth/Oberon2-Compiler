@@ -6,10 +6,10 @@
     #include "ast.h"
 	#include "oberon.hh"
 	void parseComment(void);
+	extern int yydebug;
     extern "C"{
       int yylex(void);
     }
-	extern int yydebug;
 %}
 
 letter      [A-Za-z]
@@ -24,13 +24,11 @@ IDENT       {letter}({letter}|{digit})*
 CHAR        {digit}{hexDigit}*"X"
 STRING      ['][^']*[']|["][^"]*["]
 
-/* DOSEOF      \x1A */
-
 %%
 
 "(*"  		{ parseComment(); }
 [ \t]		{ ; }
-[\r\n]		{ yylineno++; }
+[\n]		{ yylineno++; }
 
 ":="    	{ return(ASSIGN); }
 "<="        { return(LE); } 
@@ -38,7 +36,7 @@ STRING      ['][^']*[']|["][^"]*["]
 ".."      	{ return(DOTS); }
 
 "ARRAY"		{ return(ARRAY); }
-"BEGIN"		{ return(BBEGIN); } /* Watch for clash with lex's macro! */
+"BEGIN"		{ return(BBEGIN); }
 "BY"		{ return(BY); }
 "CASE"		{ return(CASE); }
 "CONST"		{ return(CONST); }
@@ -72,7 +70,14 @@ STRING      ['][^']*[']|["][^"]*["]
 "WHILE"		{ return(WHILE); }
 "WITH"		{ return(WITH); }
 
-{digit}+/".."   { return(CONSTnum); }
+{digit}+/".."   { /* This lexeme is made to counter the ambiguity
+					faced by the lexer when it tries to a..b . To
+					find the maximal match the lexer will match the a. with the "Real"
+					rule  and result in a syntax error. Hence we associate the dots with
+					the number which later can be removed to obtain the value of number */
+					
+					return(CONSTnum);}
+					
 {INTEGER}		{ return(CONSTnum); }
 {REAL}			{ return(CONSTreal); }
 
@@ -86,27 +91,22 @@ STRING      ['][^']*[']|["][^"]*["]
 
 %%
 
-void parseComment(void)
+void parseComment()
 { 
-  int nestlevel=1;   // Counter for level of nesting
-  char c, n;
-  while ((c=yyinput())!= EOF) {
-    if (c=='*') { // Might be an end of comment!
-      if ((n=yyinput())==')') { // is an end!
-        nestlevel--;
-        if (nestlevel==0)  // Finished this comment
-          break;
-      }
-      else   // Not an end of comment - spit back character
-        unput(n);
+  int count=1;
+  char x, y;
+  while ((x=yyinput())!= EOF) {
+    if (x=='*') { 
+      if ((y=yyinput())==')') {
+        if (--count==0) break;
+	  }
+      else unput(y);
     }
-    else if (c=='(') { // start of another comment?
-      if ((n=yyinput())=='*') // is a start!
-        nestlevel++;
-      else   // Not a start of comment - spit back character
-        unput(n);
+    else if (x=='(') { 
+      if ((y=yyinput())=='*') count++;
+      else  unput(y);
     }
-    else if (c=='\n')
+    else if (x=='\n')
       yylineno++;
   }  
 }

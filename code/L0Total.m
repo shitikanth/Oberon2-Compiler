@@ -8,11 +8,11 @@ IMPORT In, Out;
 CONST MAX = 10;
 
 TYPE
-  y = INT;
+  y = INTEGER;
   z = y;
-  rc = RECORD a, b, c: INT; d: POINTER TO ARRAY OF INT; END;
-  rc1 = RECORD a, b, c: INT; d: POINTER TO ARRAY OF INT; END;
-  fn = PROCEDURE ( a, b: INT; c, d: POINTER TO ARRAY OF INT ) : rc;
+  rc = RECORD a, b, c: INTEGER; d: POINTER TO ARRAY OF INTEGER; END;
+  rc1 = RECORD a, b, c: INTEGER; d: POINTER TO ARRAY OF INTEGER; END;
+  fn = PROCEDURE ( a, b: INTEGER; c, d: POINTER TO ARRAY OF INTEGER ) : rc;
 BEGIN
   (* Read in the numbers *)
   N := 0;

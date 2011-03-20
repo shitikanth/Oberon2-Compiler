@@ -94,12 +94,12 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 40 "oberon.y"
+#line 46 "oberon.y"
 
   char * str;
   TypeSpecifier * typ;
-  Ast * syn;
-
+  TypeList * typlist;                                       //For expression list
+  
 
 
 /* Line 1676 of yacc.c  */
