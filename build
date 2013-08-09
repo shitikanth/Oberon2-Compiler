@@ -1,3 +1,0 @@
-lex oberon.l
-yacc -d oberon.y
-g++ lex.yy.c y.tab.c -o oberon
