@@ -31,5 +31,3 @@ BEGIN
   (* Output y *)
   Out.Real(y); Out.Ln
 END L1Slow.
-
-

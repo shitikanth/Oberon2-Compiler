@@ -13,6 +13,8 @@ TYPE
   rc = RECORD a, b, c: INTEGER; d: POINTER TO ARRAY OF INTEGER; END;
   rc1 = RECORD a, b, c: INTEGER; d: POINTER TO ARRAY OF INTEGER; END;
   fn = PROCEDURE ( a, b: INTEGER; c, d: POINTER TO ARRAY OF INTEGER ) : rc;
+VAR
+  N, x : INTEGER;
 BEGIN
   (* Read in the numbers *)
   N := 0;
